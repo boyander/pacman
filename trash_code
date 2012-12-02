@@ -1,0 +1,176 @@
+import flash.display.MovieClip;
+import flash.geom.Point;
+import Pacman;
+import Mapa;
+/**********************************/
+/* PACMAN - CONTINGUTS MULTIMEDIA */
+/*   Laura Cotrina, Marc Pomar    */
+/**********************************/
+
+
+// Make tileset variables for map
+var tileSize:Number = 15;
+var mapOffset = new Point(25,25);
+var mapArray:Array = new Array();
+
+// Pixel speed
+var pixelSpeed = 4;
+var deltaChange:Point = new Point(0,0);
+
+
+// Load map from file
+var file:String = "level1.txt";
+var map:Mapa = new Mapa(file);
+map.dispatcher.addEventListener("mapaLoaded", function(){
+		trace("Mapa cargado!");
+		var pacmanTest:Pacman = new Pacman(map, new Point(1,1)); 
+});
+
+/*// Loading handler
+var ldr:URLLoader = new URLLoader();
+ldr.addEventListener(Event.COMPLETE, parseaLaberinto);
+ldr.load(new URLRequest(file));
+
+// Parse from txt to array
+function parseaLaberinto(e:Event):void
+{
+	var rawMap:String = URLLoader(e.target).data;
+	var tile;
+	var row:Number = 0;
+	var column:Number = 0;
+	mapArray[0] = new Array();
+	for (var i:uint = 0; i < rawMap.length; i++)
+	{
+		tile = rawMap.charAt(i);
+		if (tile == 0)
+		{
+			row++;
+			mapArray[row] = new Array();
+			column = 0;
+		}
+		else
+		{
+			mapArray[row][column] = tile;
+			column++;
+		}
+	}
+
+	//Draw map after loading file
+	drawMap(mapArray);
+	stage.addChild(pacman);
+
+	// Frame update	
+	this.addEventListener(Event.ENTER_FRAME, function(){		
+		// Check next tile based on next position
+		var nextTile = mapArray[pacmanPosition.y + pacmanDirection.y][pacmanPosition.x + pacmanDirection.x];
+		var nextTileR = mapArray[pacmanPosition.y + realDirection.y][pacmanPosition.x + realDirection.x];
+		//Avoid movement change to hit a wall, this disables pacman to stop in the middle of a corridor
+		if((realDirection.x != pacmanDirection.x) || (realDirection.y != pacmanDirection.y)){
+			if(nextTile != 'W'){
+				nextTileR = nextTile;
+				realDirection = pacmanDirection;
+			}
+		}
+		// If tile is not a wall, stand still
+		if( nextTileR != 'W'){
+			//Check direction to avoid "cornering" effect
+			if(realDirection.y == 0){
+				deltaChange.x += pixelSpeed*realDirection.x;
+				deltaChange.y = 0;
+			}
+			if(realDirection.x == 0){
+				deltaChange.y += pixelSpeed*realDirection.y;
+				deltaChange.x = 0;
+			}
+			// Check if delta causes a tileChange and update pacman position on map
+			if(Math.abs(deltaChange.x) >= tileSize){
+				deltaChange.x = 0;
+				deltaChange.y = 0;
+				pacmanPosition.x += realDirection.x;
+			}
+			if(Math.abs(deltaChange.y) >= tileSize){
+				deltaChange.x = 0;
+				deltaChange.y = 0;
+				pacmanPosition.y += realDirection.y;
+			}
+		}
+		// Setup pixel position based on tile position
+		var pixelPosition:Point = getTileTop(pacmanPosition.y,pacmanPosition.x);
+		pacman.x = pixelPosition.x + deltaChange.x;
+		pacman.y = pixelPosition.y + deltaChange.y;*/
+	});
+}
+
+
+// Draw map using tiles
+function drawMap(map:Array)
+{
+	var mapW:uint = map.length;
+	var mapH:uint = map[0].length;
+	var i,j;
+	for (i = 0; i < mapW; i++)
+	{
+		for (j = 0; j < mapH; j++)
+		{
+			var bgClip:MovieClip;
+			// Draw wall
+			if (map[i][j] == "W")
+			{
+				bgClip = new wallClip();
+			}
+			// Draw "pac"
+			if (map[i][j] == "." || map[i][j] == "*")
+			{
+				bgClip = new pacClip();
+			}
+			bgClip.x = (tileSize * j) + mapOffset.x;
+			bgClip.y = (tileSize * i) + mapOffset.y;
+			this.addChild(bgClip);
+		}
+	}
+}
+
+// PacMan Clip
+var pacman:MovieClip = new PacmanClip();
+
+// Tile Position
+var pacmanPosition:Point = new Point(1,1);
+
+var pixelPosition:Point = getTileTop(pacmanPosition.x,pacmanPosition.y);
+pacman.x = pixelPosition.x;
+pacman.y = pixelPosition.y;
+
+// Tile to pixels
+function getTileTop(i,j)
+{
+	var xpos = (mapOffset.x + j * tileSize);
+	var ypos = (mapOffset.y + i * tileSize);
+	return new Point(xpos,ypos);
+}
+
+//Adds event listener to the stage.
+stage.addEventListener(KeyboardEvent.KEY_DOWN, detectKey);
+
+//Current direction to right
+var realDirection:Point = new Point(1,0);
+var pacmanDirection:Point = new Point(1,0);
+
+//Traces the keycode, keylocation, shiftkey and altkey.
+function detectKey(event:KeyboardEvent):void
+{
+	switch (event.keyCode)
+	{
+		case Keyboard.DOWN :
+			pacmanDirection = new Point(0,1);
+			break;
+		case Keyboard.UP :
+			pacmanDirection = new Point(0,-1);
+			break;
+		case Keyboard.LEFT :
+			pacmanDirection = new Point(-1,0);
+			break;
+		case Keyboard.RIGHT :
+			pacmanDirection = new Point(1,0);
+			break;
+	}
+}
