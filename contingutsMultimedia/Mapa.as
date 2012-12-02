@@ -1,4 +1,4 @@
-package {	// Generic class for moving object
+package contingutsMultimedia {	// Generic class for moving object
 
 	import flash.events.Event;
 	import flash.events.EventDispatcher;

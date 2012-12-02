@@ -1,4 +1,4 @@
-package {	// Generic class for moving object
+package contingutsMultimedia {	// Generic class for moving object
 
 	import flash.geom.Point;
 	import flash.display.MovieClip;

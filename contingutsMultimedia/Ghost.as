@@ -1,4 +1,4 @@
-package{
+package contingutsMultimedia{
 
 	import flash.geom.Point;
 	import Actor;

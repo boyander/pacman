@@ -1,8 +1,8 @@
-package{
+package contingutsMultimedia {
 
 	import flash.geom.Point;
-	import Actor;
-	import Mapa;
+	import contingutsMultimedia.Actor;
+	import contingutsMultimedia.Mapa;
 
 	// Pacman player :-)
 	public class Pacman extends Actor {
