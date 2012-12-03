@@ -10,9 +10,6 @@ package contingutsMultimedia {
 		// Constants
 		public static const STARTSPEED:Number = 4;
 
-		// Hold map copy to check against colision with walls
-		private var map:Mapa;
-
 		// Real direction where pacman moves
 		private var _realDirection:Point;
 
@@ -67,10 +64,5 @@ package contingutsMultimedia {
 			}
 		}
 
-		// Get pacman pixel position
-		public function getPixelPosition(){
-			var pixelPosition:Point = map.getTileAtPixel(_position.x, _position.y);
-			return new Point(pixelPosition.x + _deltaChange.x ,pixelPosition.y + _deltaChange.y);
-		}
 	}
 }
