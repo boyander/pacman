@@ -27,7 +27,7 @@ package contingutsMultimedia {	// Generic class for moving object
 
 		// Get map size
 		public function getMapSize(){
-			return new Point(_mapArray.length,_mapArray[0].length);
+			return new Point(_mapArray[0].length,_mapArray.length);
 		}
 
 		// Parse from txt file to array
@@ -77,10 +77,9 @@ package contingutsMultimedia {	// Generic class for moving object
 		public function checkTransversable(x:Number,y:Number):Boolean{
 			
 			// Map limits
-			if(x > _mapArray.length || x < 0 || y > _mapArray[0].length || y < 0){
+			if(x > _mapArray[0].length || x < 0 || y > _mapArray.length || y < 0){
 				return false;
 			}
-
 			if (_mapArray[y][x] != 'W'){
 				return false;
 			}
