@@ -29,7 +29,6 @@ package contingutsMultimedia {
 			var h:uint = 0;
 			var w:uint = 0;
 			_nodes = new Array();
-			trace(mSize);
 			for(w = 0; w < mSize.x; w++){
 				_nodes[w] = new Array();
 				for(h = 0; h < mSize.y; h++){
@@ -40,6 +39,7 @@ package contingutsMultimedia {
 		}
 
 		public function findPath(start:Point, target:Point):Array{
+
 
 			// Clear searched list and add first node
 			_openNodes = new Array();
@@ -52,6 +52,12 @@ package contingutsMultimedia {
 			// Initialize nodes
 			var currentNode:Node = _nodes[start.x][start.y];
 			var targetNode:Node = _nodes[target.x][target.y];		
+
+			// First check if target location can be reached
+			if( _map.checkTransversable(targetNode.getX(),targetNode.getY()) ){
+				trace("Cannot reach location, maybe target is a Wall");
+				return null;
+			}
 
 			// Initialize start node
 			currentNode.setTravelCost(0);
@@ -87,7 +93,6 @@ package contingutsMultimedia {
 						}
 
 					}else{
-						//trace("Adding to open list");
 						neighbours[i].setTravelCost( trCost );
 						neighbours[i].setHeuristicCost( heCost );
 						neighbours[i].setParent(currentNode);
@@ -97,6 +102,11 @@ package contingutsMultimedia {
 
 				// This node is now scanned, close it
 				_closedNodes.push(currentNode);
+
+				if (_openNodes.length == 0) {
+					return null;
+				}
+
 				// Sort open nodes by cost and get new current node
 				_openNodes.sortOn('_costHeuristic', Array.NUMERIC);
 				currentNode = _openNodes.shift() as Node;
@@ -107,7 +117,7 @@ package contingutsMultimedia {
 		}
 
 		// Build final path
-		public function buildPath(start:Node, target:Node):Array {			
+		private function buildPath(start:Node, target:Node):Array {			
 			var path:Array = [];
 			var node:Node = target;
 			path.push(node);
@@ -122,19 +132,17 @@ package contingutsMultimedia {
 
 
 		// Get 4 Nearest neighbours
-		public function getNeighbours(n:Node){
+		private function getNeighbours(n:Node){
 			var connectedNodes:Array = [];
 			var neighboursIndex:Array = [[0,-1],[-1, 0],[1, 0],[0, 1]];
 			var _x = n.getX();
 			var _y = n.getY();
 			var _sizeM:Point = _map.getMapSize();
-
 			for (var i:int = 0; i < neighboursIndex.length; i++){
 
 				var _currX = _x + neighboursIndex[i][0];
 				var _currY = _y + neighboursIndex[i][1];
-				//trace("X-> "+_currX+"  Y-> "+_currY);
-				if(  _currX < 0 || _currY < 0 || _currX > _sizeM.x || _currY > _sizeM.y){
+				if(  _currX < 0 || _currY < 0 || _currX > _sizeM.x - 1 || _currY > _sizeM.y - 1){
 					continue;
 				}else{
 					connectedNodes.push( _nodes[_currX][_currY] );
