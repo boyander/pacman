@@ -25,6 +25,11 @@ package contingutsMultimedia {	// Generic class for moving object
 			ldr.addEventListener(Event.COMPLETE, parseaMapa);
 		}
 
+		// Get map size
+		public function getMapSize(){
+			return new Point(_mapArray.length,_mapArray[0].length);
+		}
+
 		// Parse from txt file to array
 		private function parseaMapa(e:Event):void
 		{
@@ -67,6 +72,19 @@ package contingutsMultimedia {	// Generic class for moving object
 
 		public function getOffset(){
 			return _mapOffset;
+		}
+
+		public function checkTransversable(x:Number,y:Number):Boolean{
+			
+			// Map limits
+			if(x > _mapArray.length || x < 0 || y > _mapArray[0].length || y < 0){
+				return false;
+			}
+
+			if (_mapArray[y][x] != 'W'){
+				return false;
+			}
+			return true;
 		}
 
 		public function draw(stage){
