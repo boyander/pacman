@@ -5,6 +5,7 @@ package contingutsMultimedia{
 	import contingutsMultimedia.Mapa;
 	import contingutsMultimedia.Node;
 	import contingutsMultimedia.AStar;
+	import contingutsMultimedia.Constants;
 
 
 	// Ghost player :-)
@@ -25,7 +26,7 @@ package contingutsMultimedia{
 		// Constructor
 		public function Ghost(ghostName:String,m:Mapa, startPosition:Point){
 			map = m;
-			_star = new AStar(map);
+			_star = new AStar(map, this);
 			super(GHOSTSPEED, new Point(1,0), startPosition);
 		}
 
@@ -35,13 +36,13 @@ package contingutsMultimedia{
 			if(_path != null && _pathStep < _path.length){
 				var currentStep:Node = _path[_pathStep];
 				if(currentStep.getY() - _position.y < 0){
-					_moveDirection = UP;
+					_moveDirection = Constants.UP;
 				}else if(currentStep.getY() - _position.y > 0){
-					_moveDirection = DOWN;
+					_moveDirection = Constants.DOWN;
 				}else if(currentStep.getX() - _position.x > 0){
-					_moveDirection = RIGHT;
+					_moveDirection = Constants.RIGHT;
 				}else{
-					_moveDirection = LEFT;
+					_moveDirection = Constants.LEFT;
 				}
 
 				//Check direction to avoid "cornering" effect
@@ -70,25 +71,23 @@ package contingutsMultimedia{
 		}
 
 		public function Update(pacman:Actor){
-			if(this.isInJuncntion()){
+			//if(this.isInJuncntion()){
 				this.deployPath(pacman);
-			}
+			//}
 		}
 
 		public function deployPath(pacman:Actor){
-			path = _star.findPath(this.getPosition(),pacman.getPosition());
+			path = _star.findPath(this.getPosition(), pacman.getPosition());
 			this.updatePath(path);
 		}
 
-		private function isInJuncntion(){
-			var count:uint = 0;
-			var neighbours:Array = _star.getNeighbours(_star._nodes[_position.x][_position.y]);
-			for(var i:uint; i < neighbours.length; i++){
-				if( !map.checkTransversable(neighbours[i].getX(), neighbours[i].getY()) ){
-					count ++;
-				}
-			}
-			return (count > 2);
+		override public function canMoveThru(p:Point){
+			if( map.checkTransversable(p.x, p.y) ){
+				return false;
+			}/*else if(p.equals()){
+				return false;
+			}*/
+			return true;
 		}
 
 		// Is current ghost in fear?

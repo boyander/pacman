@@ -8,12 +8,15 @@ package contingutsMultimedia {
 	
 	import flash.geom.Point;
 	import contingutsMultimedia.Mapa;
+	import contingutsMultimedia.Actor;
 	import contingutsMultimedia.Node;
+	import contingutsMultimedia.Constants;
 
 	public class AStar{
 
 		private var _map:Mapa;
 		public var _nodes:Array;
+		public var _actor:Actor;
 
 		// Not fully searched nodes
 		private var _openNodes:Array;
@@ -21,9 +24,9 @@ package contingutsMultimedia {
 		// Fully searched nodes
 		private var _closedNodes:Array;
 
-		public function AStar(map:Mapa){
+		public function AStar(map:Mapa, actor:Actor){
 			_map = map;
-
+			_actor = actor;
 			// Initialize nodes
 			var mSize:Point = map.getMapSize();
 			var h:uint = 0;
@@ -63,10 +66,10 @@ package contingutsMultimedia {
 			currentNode.setTravelCost(0);
 			currentNode.setHeuristicCost(this.getCost(currentNode, targetNode));
 			currentNode.setDepth(0);
+			var neighbours:Array = this.getNeighbours(currentNode);
 
 			while(currentNode != targetNode && _openNodes.length != 0){
 
-				var  neighbours:Array = this.getNeighbours(currentNode);
 				var currentMix =  (currentNode.getTravelCost() + 1) + this.getCost(currentNode, targetNode);
 				
 				// Check all neighbours from nodes
@@ -74,7 +77,7 @@ package contingutsMultimedia {
 					//trace("Neighbour <"+ i +"/"+(neighbours.length-1)+">  "+ neighbours[i].getX()+"  "+ neighbours[i].getY())
 					
 					// Current node is not a Wall or something we cant pass thru
-					if( _map.checkTransversable(neighbours[i].getX(),neighbours[i].getY()) ){
+					if( !Actor(_actor).canMoveThru(new Point(neighbours[i].getX(),neighbours[i].getY())) ){
 						continue;
 					}
 
@@ -107,9 +110,14 @@ package contingutsMultimedia {
 					return null;
 				}
 
+
 				// Sort open nodes by cost and get new current node
 				_openNodes.sortOn('_costHeuristic', Array.NUMERIC);
 				currentNode = _openNodes.shift() as Node;
+
+				// Get neighbours for new node
+				neighbours = this.getNeighbours(currentNode);
+
 			}
 
 			return this.buildPath(_nodes[start.x][start.y],targetNode);
@@ -134,14 +142,13 @@ package contingutsMultimedia {
 		// Get 4 Nearest neighbours
 		public function getNeighbours(n:Node){
 			var connectedNodes:Array = [];
-			var neighboursIndex:Array = [[0,-1],[-1, 0],[1, 0],[0, 1]];
+			var neighboursIndex:Array = [Constants.UP,Constants.DOWN,Constants.LEFT,Constants.RIGHT];
 			var _x = n.getX();
 			var _y = n.getY();
 			var _sizeM:Point = _map.getMapSize();
 			for (var i:int = 0; i < neighboursIndex.length; i++){
-
-				var _currX = _x + neighboursIndex[i][0];
-				var _currY = _y + neighboursIndex[i][1];
+				var _currX = _x + neighboursIndex[i].x;
+				var _currY = _y + neighboursIndex[i].y;
 				if(  _currX < 0 || _currY < 0 || _currX > _sizeM.x - 1 || _currY > _sizeM.y - 1){
 					continue;
 				}else{

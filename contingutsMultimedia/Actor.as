@@ -3,14 +3,10 @@ package contingutsMultimedia {	// Generic class for moving object
 	import flash.geom.Point;
 	import contingutsMultimedia.Mapa;
 	import flash.display.MovieClip;
+	import contingutsMultimedia.Constants;
+
 
 	public class Actor{
-
-
-		public static const UP:Point = new Point(0,-1);
-		public static const DOWN:Point = new Point(0,1);
-		public static const RIGHT:Point = new Point(1,0);
-		public static const LEFT:Point = new Point(-1,0);
 
 		public var _speed:Number;
 		public var _moveDirection:Point;
@@ -43,6 +39,10 @@ package contingutsMultimedia {	// Generic class for moving object
 		public function getPixelPosition(){
 			var pixelPosition:Point = map.getTileAtPixel(_position.x, _position.y);
 			return new Point(pixelPosition.x + _deltaChange.x ,pixelPosition.y + _deltaChange.y);
+		}
+
+		public function canMoveThru(p:Point){
+			return true;
 		}
 	}
 }
