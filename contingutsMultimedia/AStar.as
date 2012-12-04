@@ -13,7 +13,7 @@ package contingutsMultimedia {
 	public class AStar{
 
 		private var _map:Mapa;
-		private var _nodes:Array;
+		public var _nodes:Array;
 
 		// Not fully searched nodes
 		private var _openNodes:Array;
@@ -132,7 +132,7 @@ package contingutsMultimedia {
 
 
 		// Get 4 Nearest neighbours
-		private function getNeighbours(n:Node){
+		public function getNeighbours(n:Node){
 			var connectedNodes:Array = [];
 			var neighboursIndex:Array = [[0,-1],[-1, 0],[1, 0],[0, 1]];
 			var _x = n.getX();

@@ -4,22 +4,28 @@ package contingutsMultimedia{
 	import contingutsMultimedia.Actor;
 	import contingutsMultimedia.Mapa;
 	import contingutsMultimedia.Node;
+	import contingutsMultimedia.AStar;
 
 
 	// Ghost player :-)
 	public class Ghost extends Actor {
 
 		// Constants
-		public static const GHOSTSPEED:Number = 4;
+		public static const GHOSTSPEED:Number = 3;
 
 		// Variables
 		private var _inFear:Boolean;
 		private var _path:Array;
 		private var _pathStep:uint;
 
+		// Path deployment
+		public var _star:AStar;
+		var path:Array;
+
 		// Constructor
 		public function Ghost(ghostName:String,m:Mapa, startPosition:Point){
 			map = m;
+			_star = new AStar(map);
 			super(GHOSTSPEED, new Point(1,0), startPosition);
 		}
 
@@ -44,36 +50,45 @@ package contingutsMultimedia{
 
 				if(Math.abs(_deltaChange.x) >= map.getTileSize()) {
 					_deltaChange.x = 0;
-					moveActor(_moveDirection);
-					_pathStep++;
-				}
-				if(Math.abs(_deltaChange.y) >= map.getTileSize()) {
 					_deltaChange.y = 0;
 					moveActor(_moveDirection);
 					_pathStep++;
 				}
-				/*switch(_moveDirection){
-					case UP:
-						_deltaChange.x = 0;
-						_deltaChange.y -= GHOSTSPEED;
-						// The delta has surpassed the # of pixels for the cell, meaning we can officially change the coordinate
-						if(Math.abs(_deltaChange.x) >= map.getTileSize()) {
-							_deltaChange.y = 0;
-							moveActor(_moveDirection);
-							nextStepIdx++;
-						}
-					break;
-					case DOWN:
-				}*/
+				if(Math.abs(_deltaChange.y) >= map.getTileSize()) {
+					_deltaChange.x = 0;
+					_deltaChange.y = 0;
+					moveActor(_moveDirection);
+					_pathStep++;
+				}
 			}
-
-			trace(_moveDirection);
 		}
 
 		// Updates ghost path
 		public function updatePath(newPath:Array){
 			_pathStep = 1;
 			_path = newPath;
+		}
+
+		public function Update(pacman:Actor){
+			if(this.isInJuncntion()){
+				this.deployPath(pacman);
+			}
+		}
+
+		public function deployPath(pacman:Actor){
+			path = _star.findPath(this.getPosition(),pacman.getPosition());
+			this.updatePath(path);
+		}
+
+		private function isInJuncntion(){
+			var count:uint = 0;
+			var neighbours:Array = _star.getNeighbours(_star._nodes[_position.x][_position.y]);
+			for(var i:uint; i < neighbours.length; i++){
+				if( !map.checkTransversable(neighbours[i].getX(), neighbours[i].getY()) ){
+					count ++;
+				}
+			}
+			return (count > 2);
 		}
 
 		// Is current ghost in fear?

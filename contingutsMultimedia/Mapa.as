@@ -94,7 +94,7 @@ package contingutsMultimedia {	// Generic class for moving object
 			{
 				for (j = 0; j < mapH; j++)
 				{
-					var bgClip:MovieClip;
+					var bgClip:MovieClip = null;
 					// Draw wall
 					if (_mapArray[i][j] == "W")
 					{
@@ -105,9 +105,11 @@ package contingutsMultimedia {	// Generic class for moving object
 					{
 						bgClip = new pacClip();
 					}
-					bgClip.x = (_tileSize * j) + _mapOffset.x;
-					bgClip.y = (_tileSize * i) + _mapOffset.y;
-					stage.addChild(bgClip);
+					if(bgClip != null){
+						bgClip.x = (_tileSize * j) + _mapOffset.x;
+						bgClip.y = (_tileSize * i) + _mapOffset.y;
+						stage.addChild(bgClip);
+					}
 				}
 			}
 		}
