@@ -6,10 +6,12 @@ package contingutsMultimedia {	// Generic class for moving object
 	import flash.net.URLRequest;
 	import flash.geom.Point;
 	import flash.display.MovieClip;
+	import flash.display.Sprite;
 
-	public class Mapa{
+	public class Mapa extends Sprite{
 
 		private var _mapArray:Array;
+		private var _itemArray:Array;
 		private var _mapOffset:Point;
 		private var _tileSize:Number;
 		public var dispatcher:EventDispatcher;
@@ -18,6 +20,7 @@ package contingutsMultimedia {	// Generic class for moving object
 			_tileSize = 15;	
 			dispatcher = new EventDispatcher();
 			_mapArray = new Array();
+			_itemArray = new Array();
 			_mapOffset = offset;
 			// Loading handler
 			var ldr:URLLoader = new URLLoader();
@@ -38,6 +41,7 @@ package contingutsMultimedia {	// Generic class for moving object
 			var row:Number = 0;
 			var column:Number = 0;
 			_mapArray[0] = new Array();
+			_itemArray[0] = new Array();
 			for (var i:uint = 0; i < rawMap.length; i++)
 			{
 				tile = rawMap.charAt(i);
@@ -45,11 +49,24 @@ package contingutsMultimedia {	// Generic class for moving object
 				{
 					row++;
 					_mapArray[row] = new Array();
+					_itemArray[row] = new Array();
 					column = 0;
 				}
 				else
 				{
-					_mapArray[row][column] = tile;
+					_mapArray[row][column] = null;
+					_itemArray[row][column] = null;
+					switch(tile){
+						case "W":
+							_mapArray[row][column] = "W";
+						break;
+						case "*":
+							_itemArray[row][column] = '.';
+						break;
+						case ".":
+							_itemArray[row][column] = '.';
+						break;
+					}
 					column++;
 				}
 			}
@@ -74,6 +91,12 @@ package contingutsMultimedia {	// Generic class for moving object
 			return _mapOffset;
 		}
 
+		public function getRandomPoint(){
+			var xx:Number = Math.round(Math.random() * _mapArray[0].length);
+			var yy:Number = Math.round(Math.random() * _mapArray.length);
+			return new Point(xx,yy);
+		}
+
 		public function checkTransversable(x:Number,y:Number):Boolean{
 			
 			// Map limits
@@ -86,7 +109,10 @@ package contingutsMultimedia {	// Generic class for moving object
 			return true;
 		}
 
-		public function draw(stage){
+		public function draw(){
+
+			// TODO: Clear map
+
 			var mapW:uint = _mapArray.length;
 			var mapH:uint = _mapArray[0].length;
 			var i,j;
@@ -100,18 +126,29 @@ package contingutsMultimedia {	// Generic class for moving object
 					{
 						bgClip = new wallClip();
 					}
+					
 					// Draw "pac"
-					if (_mapArray[i][j] == "." || _mapArray[i][j] == "*")
+					if (_itemArray[i][j] == ".")
 					{
 						bgClip = new pacClip();
 					}
+
+					// Draw powerup
+					if (_itemArray[i][j] == "*"){
+						bgClip = new powerUpClip();
+					}
+
 					if(bgClip != null){
 						bgClip.x = (_tileSize * j) + _mapOffset.x;
 						bgClip.y = (_tileSize * i) + _mapOffset.y;
-						stage.addChild(bgClip);
+						this.addChild(bgClip);
 					}
 				}
 			}
+		}
+
+		public function eatItemAt(p:Point){
+			_itemArray[p.y][p.x] = null;
 		}
 	}
 }

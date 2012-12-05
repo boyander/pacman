@@ -26,6 +26,7 @@ package contingutsMultimedia{
 		// Constructor
 		public function Ghost(ghostName:String,m:Mapa, startPosition:Point){
 			map = m;
+			_inFear = false;
 			_star = new AStar(map, this);
 			_lastPosition = new Point(startPosition.x, startPosition.y);
 			super(GHOSTSPEED, new Point(1,0), startPosition);
@@ -37,8 +38,6 @@ package contingutsMultimedia{
 			if(_path != null && _pathStep < _path.length){
 				var currentStep:Node = _path[_pathStep];
 				
-
-
 				if(currentStep.getY() - _position.y < 0){
 					_moveDirection = Constants.UP;
 				}else if(currentStep.getY() - _position.y > 0){
@@ -77,15 +76,29 @@ package contingutsMultimedia{
 		}
 
 		public function Update(pacman:Actor){
-			//if(this.isInJuncntion()){
-				this.deployPath(pacman);
-			//}
+			if(this.needNewPath()){
+				var positionReach = pacman.getPosition();
+				if(this.isGhostInFear() || Math.random() < 0.40){
+					trace("Setted Random!");
+					positionReach = map.getRandomPoint();
+				}else{
+					trace("Setted normal");
+				}
+				path = _star.findPath(this.getPosition(), positionReach);
+				this.updatePath(path);
+			}
 		}
 
-		public function deployPath(pacman:Actor){
-			path = _star.findPath(this.getPosition(), pacman.getPosition());
-			this.updatePath(path);
+		public function needNewPath(){
+			if(path == null){
+				return true;
+			}
+			if(_pathStep == path.length - 1){
+				return true;
+			}
+			return false;
 		}
+
 
 		// Checks if current actor can be moved to position p
 		override public function canMoveThru(p:Point){

@@ -25,9 +25,13 @@ package contingutsMultimedia {
 		// Act player
 		public function actuate(){
 			
+			// Eat current item
+			map.eatItemAt(_position);
+
 			// Check next tile based on next position
 			var nextTile = map.getTileAtPoint(_position.x + _moveDirection.x, _position.y + _moveDirection.y);
 			var nextTileR = map.getTileAtPoint(_position.x + _realDirection.x, _position.y + _realDirection.y);
+			
 			// Avoid movement change to hit a wall, this disables pacman to stop in the middle of a corridor
 			if((_realDirection.x != _moveDirection.x) || (_realDirection.y != _moveDirection.y)){
 				if(nextTile != 'W'){
