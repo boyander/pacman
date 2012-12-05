@@ -27,7 +27,7 @@ package contingutsMultimedia {	// Generic class for moving object
 		}
 
 		public function moveActor(go:Point){
-			_position.x += go.x
+			_position.x += go.x;
 			_position.y += go.y;
 		}
 

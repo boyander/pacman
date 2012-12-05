@@ -18,7 +18,7 @@ package contingutsMultimedia{
 		private var _inFear:Boolean;
 		private var _path:Array;
 		private var _pathStep:uint;
-
+		private var _lastPosition:Point;
 		// Path deployment
 		public var _star:AStar;
 		var path:Array;
@@ -27,6 +27,7 @@ package contingutsMultimedia{
 		public function Ghost(ghostName:String,m:Mapa, startPosition:Point){
 			map = m;
 			_star = new AStar(map, this);
+			_lastPosition = new Point(startPosition.x, startPosition.y);
 			super(GHOSTSPEED, new Point(1,0), startPosition);
 		}
 
@@ -35,6 +36,9 @@ package contingutsMultimedia{
 			
 			if(_path != null && _pathStep < _path.length){
 				var currentStep:Node = _path[_pathStep];
+				
+
+
 				if(currentStep.getY() - _position.y < 0){
 					_moveDirection = Constants.UP;
 				}else if(currentStep.getY() - _position.y > 0){
@@ -52,12 +56,14 @@ package contingutsMultimedia{
 				if(Math.abs(_deltaChange.x) >= map.getTileSize()) {
 					_deltaChange.x = 0;
 					_deltaChange.y = 0;
+					_lastPosition = new Point(_position.x, _position.y);
 					moveActor(_moveDirection);
 					_pathStep++;
 				}
 				if(Math.abs(_deltaChange.y) >= map.getTileSize()) {
 					_deltaChange.x = 0;
 					_deltaChange.y = 0;
+					_lastPosition = new Point(_position.x, _position.y);
 					moveActor(_moveDirection);
 					_pathStep++;
 				}
@@ -81,12 +87,18 @@ package contingutsMultimedia{
 			this.updatePath(path);
 		}
 
+		// Checks if current actor can be moved to position p
 		override public function canMoveThru(p:Point){
-			if( map.checkTransversable(p.x, p.y) ){
+			
+			// Check position on map
+			if(map.checkTransversable(p.x, p.y) ){
 				return false;
-			}/*else if(p.equals()){
+			}
+			// If p is equal to last position, we cannot move to this point
+			// This causes a ghost to cannot reverse direction
+			if(p.equals(_lastPosition)){
 				return false;
-			}*/
+			}
 			return true;
 		}
 

@@ -46,5 +46,13 @@ package contingutsMultimedia {
 		public function getY(){
 			return _y;
 		}
+
+		public function equals(node:Node):Boolean{
+			if(node.getX() == this._x && node.getY() == this._y){
+				return true;
+			}
+			return false
+		}
+
 	}
 }
