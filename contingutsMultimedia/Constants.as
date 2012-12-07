@@ -17,6 +17,9 @@ package contingutsMultimedia{
 		public static const FIGHT:String = "Fight";
 		public static const GHOST_FEAR:String = "Fear";
 		public static const KILLED:String = "Killed";
+
+		public static const FEAR_TIME:Number = 5000;
+
 	
 		public static function reverse(direction:Point):Point{
 			if(direction.equals(UP)){

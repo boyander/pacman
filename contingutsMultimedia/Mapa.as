@@ -98,12 +98,8 @@ package contingutsMultimedia {	// Generic class for moving object
 		}
 
 		public function getRandomPoint(){
-			//var xx:Number = Math.round(Math.random() * _mapArray[0].length);
-			//var yy:Number = Math.round(Math.random() * _mapArray.length);
-
 			var rdn:Number = Math.round(Math.random() * _validPosCache.length - 1);
 			var p:Point = new Point(_validPosCache[rdn][0],_validPosCache[rdn][1]);
-			trace(p);
 			return p;
 		}
 

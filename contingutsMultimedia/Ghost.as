@@ -18,7 +18,7 @@ package contingutsMultimedia{
 	public class Ghost extends Actor {
 
 		// Constants
-		public static const GHOSTSPEED:Number = 3;
+		public static const GHOSTSPEED:Number = 2;
 
 		// Variables
 		private var _status:String;
@@ -31,7 +31,9 @@ package contingutsMultimedia{
 		private var _path:Array;
 		private var _pathStep:uint;
 
+		// Timers
 		private var _timer:Timer;
+		private var _fearTimer:Timer;
 
 		// Pacman clip
 		private var _pacman:Actor;
@@ -121,7 +123,15 @@ package contingutsMultimedia{
 		// Updates ghost path
 		public function updatePath(){
 
-			if( (_status == Constants.NORMAL || _inFear) && needNewPath()){
+			if(_inFear){
+				if(needNewPath()){
+					_pathStep = 1;
+					_path = _star.findPath(this.getPosition(), map.getRandomPoint());
+				}
+				return;
+			}
+
+			if(_status == Constants.NORMAL && needNewPath()){
 				_pathStep = 1;
 				_path = _star.findPath(this.getPosition(), map.getRandomPoint());
 			} else if (_status == Constants.FIGHT){
@@ -241,15 +251,22 @@ package contingutsMultimedia{
 
 		public function setFear(b:Boolean){
 			if(b){
+				trace("Fear ON!");
 				_timer.stop();
 				_graphicsImplement.gotoAndStop(2);
 				_inFear = true;
-				_path == null;
+				_path = null;
+				_fearTimer = new Timer(Constants.FEAR_TIME, 1);
+				_fearTimer.addEventListener("timer", function(){
+					setFear(false);
+				});
+				_fearTimer.start();
 			}else{
+				trace("Fear off :-( ");
 				_timer.start();
 				_graphicsImplement.gotoAndStop(1);
 				_inFear = false;
-				_path == null;
+				_path = null;
 			}
 		}
 
