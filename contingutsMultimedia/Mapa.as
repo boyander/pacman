@@ -7,26 +7,37 @@ package contingutsMultimedia {	// Generic class for moving object
 	import flash.geom.Point;
 	import flash.display.MovieClip;
 	import flash.display.Sprite;
+	import contingutsMultimedia.Item;
 
 	public class Mapa extends Sprite{
 
-		private var _mapArray:Array;
-		private var _itemArray:Array;
 		private var _mapOffset:Point;
 		private var _tileSize:Number;
 		public var dispatcher:EventDispatcher;
+
+		public var mapArray:Array;
+		public var graphicsMap:MovieClip;
+
 
 		public var _validPosCache:Array;
 		public var _jailPosCache:Array;
 
 		public function Mapa(fileName:String, offset:Point){
-			_tileSize = 15;	
+			_tileSize = 20;	
 			dispatcher = new EventDispatcher();
-			_mapArray = new Array();
-			_itemArray = new Array();
 			_mapOffset = offset;
+
+			// Global map array
+			mapArray = new Array();
+
+			// Cache arrays
 			_validPosCache = new Array();
 			_jailPosCache = new Array();
+
+			// Inithialize map graphics
+			graphicsMap = new MovieClip();
+			this.addChild(graphicsMap);
+
 			// Loading handler
 			var ldr:URLLoader = new URLLoader();
 			ldr.load(new URLRequest(fileName));
@@ -35,7 +46,7 @@ package contingutsMultimedia {	// Generic class for moving object
 
 		// Get map size
 		public function getMapSize(){
-			return new Point(_mapArray[0].length,_mapArray.length);
+			return new Point(mapArray[0].length,mapArray.length);
 		}
 
 		// Parse from txt file to array
@@ -45,42 +56,44 @@ package contingutsMultimedia {	// Generic class for moving object
 			var tile;
 			var row:Number = 0;
 			var column:Number = 0;
-			_mapArray[0] = new Array();
-			_itemArray[0] = new Array();
+
+			// Assign memory for mapArray
+			mapArray[0] = new Array();
 
 			for (var i:uint = 0; i < rawMap.length; i++)
 			{
 				tile = rawMap.charAt(i);
-				if (tile == 0)
-				{
+				if (tile == 0){
 					row++;
-					_mapArray[row] = new Array();
-					_itemArray[row] = new Array();
 					column = 0;
-				}
-				else
-				{
-					_mapArray[row][column] = null;
-					_itemArray[row][column] = null;
+					mapArray[row] = new Array();
+				}else{
+					mapArray[row][column] = null;
 					switch(tile){
 						case "W":
-							_mapArray[row][column] = "W";
+							mapArray[row][column] = new Item(Constants.WALL);
+
 						break;
 						case "*":
-							_itemArray[row][column] = '*';
+							mapArray[row][column] = new Item(Constants.POWERUP);
 							_validPosCache.push([column,row]);
 						break;
 						case ".":
-							_itemArray[row][column] = '.';
+							mapArray[row][column] = new Item(Constants.PAC);
 							_validPosCache.push([column,row]);
 						break;
 						case "o":
 							_jailPosCache.push([column,row]);
+							mapArray[row][column] = new Item(Constants.NEUTRAL);
+						break;
+						default:
+							mapArray[row][column] = new Item(Constants.NEUTRAL);
 						break;
 					}
 					column++;
 				}
 			}
+			this.drawMap();
 			dispatcher.dispatchEvent(new Event("mapaLoaded"));
 		}
 
@@ -91,7 +104,7 @@ package contingutsMultimedia {	// Generic class for moving object
 			return new Point(xpos,ypos);
 		}
 		public function getTileAtPoint(x:Number, y:Number){
-			return _mapArray[y][x];
+			return mapArray[y][x];
 		}
 
 		public function getTileSize(){
@@ -105,63 +118,31 @@ package contingutsMultimedia {	// Generic class for moving object
 		public function checkTransversable(x:Number,y:Number):Boolean{
 			
 			// Map limits
-			if(x > _mapArray[0].length || x < 0 || y > _mapArray.length || y < 0){
+			if(x > mapArray[0].length || x < 0 || y > mapArray.length || y < 0){
 				trace("overflow");
 				return false;
 			}
-			if (_mapArray[y][x] != 'W'){
+			if (mapArray[y][x].getType() != Constants.WALL){
 				return false;
 			}
 			return true;
 		}
 
-		public function draw(){
-
-			// Clear graphics object
-			while (this.numChildren > 0) {			
-				this.removeChildAt(0);
-			}
-
-			// Draw all map
-			var mapW:uint = _mapArray.length;
-			var mapH:uint = _mapArray[0].length;
-			var i,j;
-			for (i = 0; i < mapW; i++)
+		// Draw collision map
+		public function drawMap(){
+			var mapW:uint = mapArray.length;
+			var mapH:uint = mapArray[0].length;
+			for (var i:uint = 0; i < mapW; i++)
 			{
-				for (j = 0; j < mapH; j++)
+				for (var j:uint = 0; j < mapH; j++)
 				{
-					var bgClip:MovieClip = null;
-
-					// Draw map array
-					switch(_mapArray[i][j]){
-						case 'W':
-							bgClip = new wallClip();
-						break;
+					// Draw items
+					if(mapArray[i][j] != null){
+						mapArray[i][j].x = (_tileSize * j) + _mapOffset.x;
+						mapArray[i][j].y = (_tileSize * i) + _mapOffset.y;
+						graphicsMap.addChild(mapArray[i][j]);
 					}
 
-					if(bgClip != null){
-						bgClip.x = (_tileSize * j) + _mapOffset.x;
-						bgClip.y = (_tileSize * i) + _mapOffset.y;
-						this.addChild(bgClip);
-					}
-
-					bgClip = null;
-
-					// Draw items array
-					switch(_itemArray[i][j]){
-						case '.':
-							bgClip = new pacClip();
-						break;
-						case '*':
-							bgClip = new powerUpClip();
-						break;
-					}
-
-					if(bgClip != null){
-						bgClip.x = (_tileSize * j) + _mapOffset.x;
-						bgClip.y = (_tileSize * i) + _mapOffset.y;
-						this.addChild(bgClip);
-					}
 				}
 			}
 		}
@@ -171,13 +152,13 @@ package contingutsMultimedia {	// Generic class for moving object
 		}
 
 		public function getRandomPoint(){
-			var rdn:Number = Math.round(Math.random() * _validPosCache.length - 1);
+			var rdn:Number = Math.abs(Math.round(Math.random() * _validPosCache.length - 1));
 			var p:Point = new Point(_validPosCache[rdn][0],_validPosCache[rdn][1]);
 			return p;
 		}
 
 		public function getJailPosition():Point{
-			var rdn:Number = Math.round(Math.random() * _jailPosCache.length - 1);
+			var rdn:Number = Math.abs(Math.round(Math.random() * _jailPosCache.length - 1));
 			var p:Point = new Point(_jailPosCache[rdn][0],_jailPosCache[rdn][1]);
 			return p;
 		}
@@ -188,15 +169,18 @@ package contingutsMultimedia {	// Generic class for moving object
 		}
 
 		public function eatItemAt(p:Point){
-			switch(_itemArray[p.y][p.x]){
-				case ".":
-					dispatcher.dispatchEvent(new Event("eatPac"));
-				break;
-				case "*":
-					dispatcher.dispatchEvent(new Event("eatPowerUp"));
-				break;
+			if(mapArray[p.y][p.x].getType() != Constants.NEUTRAL){
+				switch(mapArray[p.y][p.x].getType()){
+					case Constants.PAC:
+						dispatcher.dispatchEvent(new Event("eatPac"));
+					break;
+					case Constants.POWERUP:
+						dispatcher.dispatchEvent(new Event("eatPowerUp"));
+					break;
+				}
+				graphicsMap.removeChild(mapArray[p.y][p.x]);
+				mapArray[p.y][p.x] = new Item(Constants.NEUTRAL);
 			}
-			_itemArray[p.y][p.x] = null;
 		}
 	}
 }

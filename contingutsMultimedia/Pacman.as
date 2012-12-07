@@ -5,12 +5,14 @@ package contingutsMultimedia {
 	import contingutsMultimedia.Actor;
 	import flash.display.MovieClip;
 	import contingutsMultimedia.Mapa;
+	import contingutsMultimedia.Item;
+
 
 	// Pacman player :-)
 	public class Pacman extends Actor {
 
 		// Constants
-		public static const STARTSPEED:Number = 4;
+		public static const STARTSPEED:Number = 5;
 
 		// Real direction where pacman moves
 		private var _realDirection:Point;
@@ -32,12 +34,12 @@ package contingutsMultimedia {
 			map.eatItemAt(_position);
 
 			// Check next tile based on next position
-			var nextTile = map.getTileAtPoint(_position.x + _moveDirection.x, _position.y + _moveDirection.y);
-			var nextTileR = map.getTileAtPoint(_position.x + _realDirection.x, _position.y + _realDirection.y);
+			var nextTile:Item = map.getTileAtPoint(_position.x + _moveDirection.x, _position.y + _moveDirection.y);
+			var nextTileR:Item = map.getTileAtPoint(_position.x + _realDirection.x, _position.y + _realDirection.y);
 			
 			// Avoid movement change to hit a wall, this disables pacman to stop in the middle of a corridor
 			if((_realDirection.x != _moveDirection.x) || (_realDirection.y != _moveDirection.y)){
-				if(nextTile != 'W'){
+				if(nextTile.getType() != Constants.WALL){
 					nextTileR = nextTile;
 					_realDirection.x = _moveDirection.x;
 					_realDirection.y = _moveDirection.y;
@@ -45,7 +47,7 @@ package contingutsMultimedia {
 			}
 			
 			// If tile is not a wall, stand still
-			if( nextTileR != 'W'){
+			if( nextTileR.getType() != Constants.WALL){
 				
 				//Check direction to avoid "cornering" effect
 				if(_realDirection.y == 0){

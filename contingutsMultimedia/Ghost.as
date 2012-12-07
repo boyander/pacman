@@ -18,7 +18,7 @@ package contingutsMultimedia{
 	public class Ghost extends Actor {
 
 		// Constants
-		public static const GHOSTSPEED:Number = 2;
+		public static const GHOSTSPEED:Number = 3;
 
 		// Variables
 		private var _status:String;

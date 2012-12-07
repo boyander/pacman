@@ -3,6 +3,12 @@ package contingutsMultimedia{
 	import flash.geom.Point;
 
 	public class Constants{
+
+		public static const WALL:String = "Wall";
+		public static const PAC:String = "Pac";
+		public static const POWERUP:String = "PowerUp";
+		public static const NEUTRAL:String = "Neutral";
+
 		public static const UP:Point = new Point(0,-1);
 		public static const DOWN:Point = new Point(0,1);
 		public static const RIGHT:Point = new Point(1,0);

@@ -12,6 +12,9 @@ package contingutsMultimedia {
 	import flash.text.TextField;
 	import flash.text.TextFormat;
 
+	import flash.media.Sound;
+	import flash.net.URLRequest;
+
 
 	public class Game extends MovieClip{
 
@@ -22,6 +25,9 @@ package contingutsMultimedia {
 		public var names:Array = [Constants.BLINKY, Constants.INKY, Constants.PINKY, Constants.CLYDE];
 
 		private var pchecker:MovieClip = new MovieClip();
+
+		// Sound objects
+		var soundFX:Sound;
 
 		// Global score
 		public var score:Number;
@@ -34,6 +40,14 @@ package contingutsMultimedia {
 			_mapa.dispatcher.addEventListener("mapaLoaded", mapaCargado);
 			ghosts = new Array();
 			this.setupScoreBoard();
+
+			// Load chili sound
+			soundFX = new Sound();
+			soundFX.load(new URLRequest("audios/chili.mp3"));
+			var soundBG:Sound = new Sound();
+			soundBG.load(new URLRequest("audios/bg_theme.mp3"));
+			//soundBG.play();
+
 		}
 
 		public function mapaCargado(e:Event){
@@ -72,9 +86,6 @@ package contingutsMultimedia {
 			for(var i:uint; i < ghosts.length; i++){
 				ghosts[i].actuate();
 			}
-
-			// Redraw Map
-			_mapa.draw();
 		}
 
 		// Eat event
@@ -83,6 +94,8 @@ package contingutsMultimedia {
 				this.addScore(10);
 			}else if (e.type == "eatPowerUp"){
 				this.addScore(50);
+				trace("UUUUH CHILIII");
+				soundFX.play();
 				for(var i:uint; i < ghosts.length; i++){
 					ghosts[i].setFear(true);
 				}
