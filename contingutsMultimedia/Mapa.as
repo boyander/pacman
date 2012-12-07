@@ -182,6 +182,11 @@ package contingutsMultimedia {	// Generic class for moving object
 			return p;
 		}
 
+		public function getSizeInPixels(){
+			var p:Point = this.getMapSize();
+			return new Point(p.x * _tileSize, p.y * _tileSize);
+		}
+
 		public function eatItemAt(p:Point){
 			switch(_itemArray[p.y][p.x]){
 				case ".":

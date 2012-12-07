@@ -9,6 +9,9 @@ package contingutsMultimedia {
 	import flash.events.KeyboardEvent;
 	import flash.ui.Keyboard;
 
+	import flash.text.TextField;
+	import flash.text.TextFormat;
+
 
 	public class Game extends MovieClip{
 
@@ -22,15 +25,15 @@ package contingutsMultimedia {
 
 		// Global score
 		public var score:Number;
-
+		public var scoreText:TextField;
 
 		public function Game(gameMap:String){
-			_offset = new Point(25,25);
+			_offset = new Point(0,25);
 			_mapa = new Mapa(gameMap, _offset);
 			this.addChild(_mapa);
 			_mapa.dispatcher.addEventListener("mapaLoaded", mapaCargado);
 			ghosts = new Array();
-			score = 0;
+			this.setupScoreBoard();
 		}
 
 		public function mapaCargado(e:Event){
@@ -77,19 +80,17 @@ package contingutsMultimedia {
 		// Eat event
 		public function eatEvent(e:Event){
 			if(e.type == "eatPac"){
-				score += 10;
+				this.addScore(10);
 			}else if (e.type == "eatPowerUp"){
-				score += 50;
+				this.addScore(50);
 				for(var i:uint; i < ghosts.length; i++){
 					ghosts[i].setFear(true);
 				}
 			}else if (e.type == "eatGhost"){
 				trace("Eat ghost");
-				score += 200;
+				this.addScore(200);
 			}
-			trace("Score is -> " + score);
 		}
-
 
 		// Detects key press
 		public function detectKey(event:KeyboardEvent):void{
@@ -107,6 +108,24 @@ package contingutsMultimedia {
 					pacman.setMoveDirection(Constants.RIGHT);
 					break;
 			}
+		}
+
+		public function addScore(s:Number){
+			score += s;
+			scoreText.text = "Score: " + String(score);
+		}
+
+		public function setupScoreBoard(){
+			score = 0;
+			scoreText = new TextField();
+			scoreText.name = "title";
+			scoreText.mouseEnabled = false;
+
+			var myformat:TextFormat = new TextFormat();
+			myformat.color = 0x336699;
+			myformat.size = 20;
+			scoreText.defaultTextFormat = myformat;
+			this.addChild(scoreText);
 		}
 
 	}
