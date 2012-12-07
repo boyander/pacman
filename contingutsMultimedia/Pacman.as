@@ -1,7 +1,9 @@
 package contingutsMultimedia {
 
 	import flash.geom.Point;
+	import flash.utils.getDefinitionByName;
 	import contingutsMultimedia.Actor;
+	import flash.display.MovieClip;
 	import contingutsMultimedia.Mapa;
 
 	// Pacman player :-)
@@ -13,12 +15,13 @@ package contingutsMultimedia {
 		// Real direction where pacman moves
 		private var _realDirection:Point;
 
-
 		// Constructor
-		public function Pacman(m:Mapa, startPosition:Point){
+		public function Pacman(pacmanGraphicsClip:String, m:Mapa, startPosition:Point){
 			_realDirection = new Point(1,0);
 			map = m;
-			super(STARTSPEED, new Point(1,0), startPosition);
+			var definedImplementation:Class = getDefinitionByName(pacmanGraphicsClip) as Class;
+      		var pacmanClip:MovieClip = new definedImplementation();
+			super(pacmanClip, STARTSPEED, new Point(1,0), startPosition);
 
 		}
 
@@ -58,15 +61,17 @@ package contingutsMultimedia {
 				if(Math.abs(_deltaChange.x) >= map.getTileSize()){
 					_deltaChange.x = 0;
 					_deltaChange.y = 0;
-					_position.x += _realDirection.x;
+					moveActor(_realDirection);
 				}
 				if(Math.abs(_deltaChange.y) >= map.getTileSize()){
 					_deltaChange.x = 0;
 					_deltaChange.y = 0;
-					_position.y += _realDirection.y;
+					moveActor(_realDirection);
 				}
 			}
-		}
 
+			// change our position
+			this.updateRealMapPosition();
+		}
 	}
 }
