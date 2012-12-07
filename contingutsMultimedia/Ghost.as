@@ -23,6 +23,7 @@ package contingutsMultimedia{
 		// Variables
 		private var _status:String;
 		private var _inFear:Boolean;
+		private var _inJail:Boolean;
 		private var _lastPosition:Point;
 		private var _ghostName:String;
 
@@ -50,6 +51,7 @@ package contingutsMultimedia{
 			_ghostName = ghostName;
 			_pathcheck = pathcheck;
 			_inFear = false;
+			_inJail = false;
 
 			// Set initial status
 			_status = Constants.NORMAL;
@@ -118,10 +120,33 @@ package contingutsMultimedia{
 			}
 			this.updateRealMapPosition();
 			this.updatePath();
+
+			// Check collision with pacman
+			if(this._position.equals(_pacman._position)){
+				if(_inFear){
+					dispatchEvent(new Event("eatGhost"));
+					trace("Pacman eats [" + _ghostName+"]");
+					setFear(false);
+					_inJail = true;
+					_path = null;
+					this.setSpeed(GHOSTSPEED * 2);
+				}else{
+					dispatchEvent(new Event("gameOver"));
+				}
+			}
+
 		}
 
 		// Updates ghost path
 		public function updatePath(){
+
+			if(_inJail){
+				if(needNewPath()){
+					_pathStep = 1;
+					_path = _star.findPath(this.getPosition(), map.getJailPosition());
+				}
+				return;
+			}
 
 			if(_inFear){
 				if(needNewPath()){
@@ -227,13 +252,6 @@ package contingutsMultimedia{
 			return false;
 		}
 
-		// Checks if ghost is eated by pacman
-		public function imEatedByPacman(){
-			if(this._position.equals(_pacman._position)){
-				trace("PACMAN EATS GHOST " + _ghostName);
-			}
-		}
-
 		// Checks if current actor can be moved to position p
 		override public function canMoveThru(p:Point){
 			
@@ -250,23 +268,25 @@ package contingutsMultimedia{
 		}
 
 		public function setFear(b:Boolean){
-			if(b){
-				trace("Fear ON!");
-				_timer.stop();
-				_graphicsImplement.gotoAndStop(2);
-				_inFear = true;
-				_path = null;
-				_fearTimer = new Timer(Constants.FEAR_TIME, 1);
-				_fearTimer.addEventListener("timer", function(){
-					setFear(false);
-				});
-				_fearTimer.start();
-			}else{
-				trace("Fear off :-( ");
-				_timer.start();
-				_graphicsImplement.gotoAndStop(1);
-				_inFear = false;
-				_path = null;
+			if(!_inJail){
+				if(b){
+					trace("Fear ON!");
+					_timer.stop();
+					_graphicsImplement.gotoAndStop(2);
+					_inFear = true;
+					_path = null;
+					_fearTimer = new Timer(Constants.FEAR_TIME, 1);
+					_fearTimer.addEventListener("timer", function(){
+						setFear(false);
+					});
+					_fearTimer.start();
+				}else{
+					trace("Fear off :-( ");
+					_timer.start();
+					_graphicsImplement.gotoAndStop(1);
+					_inFear = false;
+					_path = null;
+				}
 			}
 		}
 

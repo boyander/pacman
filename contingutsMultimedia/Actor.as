@@ -5,7 +5,6 @@ package contingutsMultimedia {	// Generic class for moving object
 	import flash.display.MovieClip;
 	import contingutsMultimedia.Constants;
 
-
 	public class Actor extends MovieClip{
 
 		public var _speed:Number;
@@ -24,9 +23,9 @@ package contingutsMultimedia {	// Generic class for moving object
 			this.addChild(graphicsClip);
 		}
 
-		public function setMoveDirection(x:Number, y:Number){
-			_moveDirection.x = x;
-			_moveDirection.y = y;
+		public function setMoveDirection(p:Point){
+			_moveDirection.x = p.x;
+			_moveDirection.y = p.y;
 		}
 
 		public function moveActor(go:Point){
@@ -56,9 +55,8 @@ package contingutsMultimedia {	// Generic class for moving object
 			this.y = pos.y;
 		}
 
-		// Get pixel position
-		public function getPixelPosition(){
-			
+		public function setSpeed(s:Number){
+			_speed = s;
 		}
 
 		public function canMoveThru(p:Point){

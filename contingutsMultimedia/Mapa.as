@@ -17,6 +17,7 @@ package contingutsMultimedia {	// Generic class for moving object
 		public var dispatcher:EventDispatcher;
 
 		public var _validPosCache:Array;
+		public var _jailPosCache:Array;
 
 		public function Mapa(fileName:String, offset:Point){
 			_tileSize = 15;	
@@ -25,6 +26,7 @@ package contingutsMultimedia {	// Generic class for moving object
 			_itemArray = new Array();
 			_mapOffset = offset;
 			_validPosCache = new Array();
+			_jailPosCache = new Array();
 			// Loading handler
 			var ldr:URLLoader = new URLLoader();
 			ldr.load(new URLRequest(fileName));
@@ -72,6 +74,9 @@ package contingutsMultimedia {	// Generic class for moving object
 							_itemArray[row][column] = '.';
 							_validPosCache.push([column,row]);
 						break;
+						case "o":
+							_jailPosCache.push([column,row]);
+						break;
 					}
 					column++;
 				}
@@ -95,12 +100,6 @@ package contingutsMultimedia {	// Generic class for moving object
 
 		public function getOffset(){
 			return _mapOffset;
-		}
-
-		public function getRandomPoint(){
-			var rdn:Number = Math.round(Math.random() * _validPosCache.length - 1);
-			var p:Point = new Point(_validPosCache[rdn][0],_validPosCache[rdn][1]);
-			return p;
 		}
 
 		public function checkTransversable(x:Number,y:Number):Boolean{
@@ -169,6 +168,18 @@ package contingutsMultimedia {	// Generic class for moving object
 
 		public function getGhostPosition():Point{
 			return new Point(14,14);
+		}
+
+		public function getRandomPoint(){
+			var rdn:Number = Math.round(Math.random() * _validPosCache.length - 1);
+			var p:Point = new Point(_validPosCache[rdn][0],_validPosCache[rdn][1]);
+			return p;
+		}
+
+		public function getJailPosition():Point{
+			var rdn:Number = Math.round(Math.random() * _jailPosCache.length - 1);
+			var p:Point = new Point(_jailPosCache[rdn][0],_jailPosCache[rdn][1]);
+			return p;
 		}
 
 		public function eatItemAt(p:Point){
