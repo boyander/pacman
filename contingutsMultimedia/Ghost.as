@@ -45,7 +45,7 @@ package contingutsMultimedia{
 		public function Ghost(ghostName:String, ghostGraphicsClip:String, pacman:Actor,m:Mapa, pathcheck:MovieClip){
 			map = m;
 			_star = new AStar(map, this);
-			var startPosition:Point = m.getGhostPosition();
+			var startPosition:Point = m.getJailPosition();
 			_lastPosition = new Point(startPosition.x, startPosition.y);
 			_pacman = pacman;
 			_ghostName = ghostName;
@@ -55,6 +55,7 @@ package contingutsMultimedia{
 
 			// Set initial status
 			_status = Constants.NORMAL;
+			
 			// Random timing mode
 			switch(_ghostName){
 				case Constants.BLINKY:

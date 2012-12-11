@@ -8,22 +8,31 @@ package contingutsMultimedia {	// Generic class for moving object
 	public class Item extends Sprite{
 
 		private var _type:String;
-		private var _graphics:String;
+		private var _graphics:MovieClip;
 
 		public function Item(type:String){
 			_type = type;
 			switch(type){
 				case Constants.WALL:
-					this.addChild(new wallClip());
+					_graphics = new wallClip();
 				break;
 				case Constants.PAC:
-					this.addChild(new pacClip());
+					_graphics = new pacClip();
 				break;
 				case Constants.POWERUP:
-					this.addChild(new powerUpClip());
+					_graphics = new powerUpClip();
 				break;
 				case Constants.NEUTRAL:
 				break;
+			}
+			if(_graphics){
+				this.addChild(_graphics);
+			}
+		}
+
+		public function animate(){
+			if(_graphics){
+				this._graphics.gotoAndPlay(2);
 			}
 		}
 

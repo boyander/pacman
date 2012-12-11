@@ -86,6 +86,7 @@ package contingutsMultimedia {
 			for(var i:uint; i < ghosts.length; i++){
 				ghosts[i].actuate();
 			}
+			_mapa.animateSlices();
 		}
 
 		// Eat event

@@ -8,23 +8,34 @@ package contingutsMultimedia {	// Generic class for moving object
 	import flash.display.MovieClip;
 	import flash.display.Sprite;
 	import contingutsMultimedia.Item;
+	import contingutsMultimedia.ZigZagMatrix;
+	import flash.utils.Timer;
+    import flash.events.TimerEvent;
 
 	public class Mapa extends Sprite{
 
+		// Offset for all map tiles
 		private var _mapOffset:Point;
-		private var _tileSize:Number;
-		public var dispatcher:EventDispatcher;
 
+		// Tile Size
+		private var _tileSize:Number = 20;
+
+		// Event dispatcher
+		public var dispatcher:EventDispatcher = new EventDispatcher();
+
+		// Graphics array
 		public var mapArray:Array;
 		public var graphicsMap:MovieClip;
 
-
+		// Cache arrays
 		public var _validPosCache:Array;
 		public var _jailPosCache:Array;
 
+		var zig:ZigZagMatrix;
+
 		public function Mapa(fileName:String, offset:Point){
-			_tileSize = 20;	
-			dispatcher = new EventDispatcher();
+			
+			// Set map offset
 			_mapOffset = offset;
 
 			// Global map array
@@ -128,7 +139,7 @@ package contingutsMultimedia {	// Generic class for moving object
 			return true;
 		}
 
-		// Draw collision map
+		// Assign positons to map objects
 		public function drawMap(){
 			var mapW:uint = mapArray.length;
 			var mapH:uint = mapArray[0].length;
@@ -142,13 +153,9 @@ package contingutsMultimedia {	// Generic class for moving object
 						mapArray[i][j].y = (_tileSize * i) + _mapOffset.y;
 						graphicsMap.addChild(mapArray[i][j]);
 					}
-
 				}
 			}
-		}
-
-		public function getGhostPosition():Point{
-			return new Point(14,14);
+			animate();
 		}
 
 		public function getRandomPoint(){
@@ -181,6 +188,18 @@ package contingutsMultimedia {	// Generic class for moving object
 				graphicsMap.removeChild(mapArray[p.y][p.x]);
 				mapArray[p.y][p.x] = new Item(Constants.NEUTRAL);
 			}
+		}
+
+		public function animate(){
+			zig = new ZigZagMatrix(mapArray);
+		}
+
+		public function animateSlices():void{
+			zig.getCurrentSlice();
+			//var sliceItems:Array = zig.getCurrentSlice();
+			/*for(var i:uint = 0; i < sliceItems.length; i++ ){
+				sliceItems[i].animate();
+			}*/
 		}
 	}
 }
