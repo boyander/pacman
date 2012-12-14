@@ -17,7 +17,6 @@ package contingutsMultimedia
       }
 
       public function getCurrentSlice(){
-         //trace("Slice "+ this.currentSlice);
          //var sliceArray:Array = new Array();
          var z1:int = this.currentSlice < this.height ? 0 : this.currentSlice - this.height + 1;
          var z2:int = this.currentSlice < this.width ? 0 : this.currentSlice - this.width + 1;
