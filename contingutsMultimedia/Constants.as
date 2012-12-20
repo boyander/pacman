@@ -26,6 +26,27 @@ package contingutsMultimedia{
 
 		public static const FEAR_TIME:Number = 5000;
 
+		//graficos para fantasmas
+		public static const GRAFIC_BLINKY:String = "fantasmica_rojo";
+		public static const GRAFIC_INKY:String = "fantasmica_azul";
+		public static const GRAFIC_PINKY:String = "fantasmica_rosa";
+		public static const GRAFIC_CLYDE:String = "fantasmica_naranja";
+		public static const GRAFIC_FEAR:String = "fantasmica_malo";
+
+		public static function graficImplementation(fantasma:String){
+			switch (fantasma){
+				case BLINKY:
+					return GRAFIC_BLINKY;
+				case INKY:
+					return GRAFIC_INKY;
+				case PINKY:
+					return GRAFIC_PINKY;
+				case CLYDE:
+					return GRAFIC_CLYDE;
+				default:
+					return GRAFIC_INKY;
+			}
+		}
 	
 		public static function reverse(direction:Point):Point{
 			if(direction.equals(UP)){

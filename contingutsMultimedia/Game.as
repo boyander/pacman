@@ -59,7 +59,7 @@ package contingutsMultimedia {
 
 			// Create ghost		
 			for(var i:uint; i < names.length; i++){
-				var ghost:Ghost = new Ghost(names[i], "GhostClip", pacman, _mapa, pchecker);
+				var ghost:Ghost = new Ghost(names[i], Constants.graficImplementation(names[i]), pacman, _mapa, pchecker);
 				ghost.addEventListener("eatGhost", eatEvent);
 				ghosts.push(ghost);
 				stage.addChild(ghost);
