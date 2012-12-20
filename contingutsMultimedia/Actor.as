@@ -20,7 +20,7 @@ package contingutsMultimedia {	// Generic class for moving object
 			_moveDirection = moveDir;
 			_position = position;
 			_graphicsImplement = graphicsClip;
-			this.addChild(graphicsClip);
+			this.addChild(_graphicsImplement);
 		}
 
 		public function setMoveDirection(p:Point){

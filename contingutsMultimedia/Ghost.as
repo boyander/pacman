@@ -30,7 +30,8 @@ package contingutsMultimedia{
 		// Path deployment
 		public var _star:AStar;
 		private var _path:Array;
-		private var _pathStep:uint;
+		private var _pathStep:uint;			
+		private var _pathcheck:MovieClip; // Debug variable path checker
 
 		// Timers
 		private var _timer:Timer;
@@ -39,7 +40,9 @@ package contingutsMultimedia{
 		// Pacman clip
 		private var _pacman:Actor;
 
-		private var _pathcheck:MovieClip; 
+		// Ghost fear graphic implementation
+		var _ghostFearGraphic:MovieClip;
+
 
 		// Constructor
 		public function Ghost(ghostName:String, ghostGraphicsClip:String, pacman:Actor,m:Mapa, pathcheck:MovieClip){
@@ -75,6 +78,9 @@ package contingutsMultimedia{
 					_status = Constants.NORMAL;
 				break;
 			}
+
+			// Initialize ghost fear graphic
+			_ghostFearGraphic = new fantasmica_malo();
 
 			// Start timer for ghosts
 			this.updateTimers(null);
@@ -273,7 +279,6 @@ package contingutsMultimedia{
 				if(b){
 					trace("Fear ON!");
 					_timer.stop();
-					_graphicsImplement.gotoAndStop(2);
 					_inFear = true;
 					_path = null;
 					_fearTimer = new Timer(Constants.FEAR_TIME, 1);
@@ -281,12 +286,18 @@ package contingutsMultimedia{
 						setFear(false);
 					});
 					_fearTimer.start();
+
+					// Add graphic to stack
+					this.addChild(_ghostFearGraphic);
+
 				}else{
 					trace("Fear off :-( ");
 					_timer.start();
-					_graphicsImplement.gotoAndStop(1);
 					_inFear = false;
 					_path = null;
+
+					// Remove graphic from stack
+					this.removeChild(_ghostFearGraphic);
 				}
 			}
 		}
