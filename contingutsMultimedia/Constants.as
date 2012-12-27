@@ -1,3 +1,10 @@
+/*
+Project: Pacman
+Authors: Marc Pomar & Laura Cotrina.
+Description:
+	Constants for game.
+*/
+
 package contingutsMultimedia{
 
 	import flash.geom.Point;

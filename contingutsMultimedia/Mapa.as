@@ -1,4 +1,11 @@
-package contingutsMultimedia {	// Generic class for moving object
+/*
+Project: Pacman
+Authors: Marc Pomar & Laura Cotrina.
+Description:
+	Class for loading map and collision assets.
+*/
+
+package contingutsMultimedia {
 
 	import flash.events.Event;
 	import flash.events.EventDispatcher;
@@ -115,6 +122,10 @@ package contingutsMultimedia {	// Generic class for moving object
 			return new Point(xpos,ypos);
 		}
 		public function getTileAtPoint(x:Number, y:Number){
+			// If on map limits return no wall
+			if (x > mapArray[0].length-1 || x < 0 || y > mapArray.length-1 || y < 0){
+				return new Item(Constants.NEUTRAL);
+			}
 			return mapArray[y][x];
 		}
 
@@ -129,9 +140,9 @@ package contingutsMultimedia {	// Generic class for moving object
 		public function checkTransversable(x:Number,y:Number):Boolean{
 			
 			// Map limits
-			if(x > mapArray[0].length || x < 0 || y > mapArray.length || y < 0){
+			if(x > mapArray[0].length-1 || x < 0 || y > mapArray.length-1 || y < 0){
 				trace("overflow");
-				return false;
+				return true;
 			}
 			if (mapArray[y][x].getType() != Constants.WALL){
 				return false;

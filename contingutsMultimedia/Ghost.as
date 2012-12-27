@@ -1,3 +1,10 @@
+/*
+Project: Pacman
+Authors: Marc Pomar & Laura Cotrina.
+Description:
+	Ghost implementation for Inky, Blinky, Pinky and Clyde.
+*/
+
 package contingutsMultimedia{
 
 	import flash.geom.Point;

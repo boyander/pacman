@@ -1,3 +1,10 @@
+/*
+Project: Pacman
+Authors: Marc Pomar & Laura Cotrina.
+Description:
+   Animates map matrix using a matrix slice algorithm.
+*/
+
 package contingutsMultimedia
 {
    public class ZigZagMatrix{

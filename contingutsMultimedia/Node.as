@@ -1,3 +1,10 @@
+/*
+Project: Pacman
+Authors: Marc Pomar & Laura Cotrina.
+Description:
+	Used in companion with A* algorithm to calc shortest path. Each node is a map tile.
+*/
+
 package contingutsMultimedia {	
 	import flash.geom.Point;
 	public class Node{

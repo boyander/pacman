@@ -1,3 +1,10 @@
+/*
+Project: Pacman
+Authors: Marc Pomar & Laura Cotrina.
+Description:
+	Main game class, manages game objects, score, sound FX, etc.
+*/
+
 package contingutsMultimedia {	
 	import flash.display.MovieClip;
 	import flash.geom.Point;
@@ -14,7 +21,6 @@ package contingutsMultimedia {
 
 	import flash.media.Sound;
 	import flash.net.URLRequest;
-
 
 	public class Game extends MovieClip{
 
@@ -36,7 +42,6 @@ package contingutsMultimedia {
 		public function Game(gameMap:String){
 			_offset = new Point(0,25);
 			_mapa = new Mapa(gameMap, _offset);
-			this.addChild(_mapa);
 			_mapa.dispatcher.addEventListener("mapaLoaded", mapaCargado);
 			ghosts = new Array();
 			this.setupScoreBoard();
@@ -52,6 +57,10 @@ package contingutsMultimedia {
 
 		public function mapaCargado(e:Event){
 			
+			// Add map to game clip			
+			this.addChild(_mapa);
+
+			// DEBUG: Path checker
 			this.addChild(pchecker);
 
 			pacman = new Pacman("PacmanClip", _mapa, new Point(1,1));
@@ -62,18 +71,14 @@ package contingutsMultimedia {
 				var ghost:Ghost = new Ghost(names[i], Constants.graficImplementation(names[i]), pacman, _mapa, pchecker);
 				ghost.addEventListener("eatGhost", eatEvent);
 				ghosts.push(ghost);
-				stage.addChild(ghost);
+				this.addChild(ghost);
 			}
 
 			_mapa.dispatcher.addEventListener("eatPac", eatEvent);
 			_mapa.dispatcher.addEventListener("eatPowerUp", eatEvent);
 
-			
 			// Objects updater
 			this.addEventListener(Event.ENTER_FRAME, frameUpdate);
-			
-			// Keyboard controller
-			stage.addEventListener(KeyboardEvent.KEY_DOWN, detectKey);
 		}
 
 		// Updates all objects of game

@@ -1,4 +1,11 @@
-package contingutsMultimedia {	// Generic class for moving object
+/*
+Project: Pacman
+Authors: Marc Pomar & Laura Cotrina.
+Description:
+	Generic class for moving object
+*/
+
+package contingutsMultimedia {
 
 	import flash.geom.Point;
 	import contingutsMultimedia.Mapa;
@@ -30,8 +37,8 @@ package contingutsMultimedia {	// Generic class for moving object
 
 		public function moveActor(go:Point){
 			var _sizeM:Point = map.getMapSize();
-			var _currX = (_position.x + go.x) % (_sizeM.x-1);
-			var _currY = (_position.y + go.y) % (_sizeM.y-1);
+			var _currX = (_position.x + go.x) % (_sizeM.x);
+			var _currY = (_position.y + go.y) % (_sizeM.y);
 
 			if(  _currX < 0 ){
 				_currX = (_sizeM.x-2) - _currX;
@@ -39,7 +46,6 @@ package contingutsMultimedia {	// Generic class for moving object
 			if( _currY < 0 ){
 				_currY = (_sizeM.x-2) - _currY;
 			}
-
 			_position.x = _currX;
 			_position.y = _currY;
 		}

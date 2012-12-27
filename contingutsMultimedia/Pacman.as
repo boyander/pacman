@@ -1,3 +1,10 @@
+/*
+Project: Pacman
+Authors: Marc Pomar & Laura Cotrina.
+Description:
+	Main game character implementation (pacman), also handles user moves.
+*/
+
 package contingutsMultimedia {
 
 	import flash.geom.Point;

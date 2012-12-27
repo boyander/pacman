@@ -1,4 +1,11 @@
-package contingutsMultimedia {	// Generic class for moving object
+/*
+Project: Pacman
+Authors: Marc Pomar & Laura Cotrina.
+Description:
+	Generic class for item in game (a pac or a powerUp)
+*/
+
+package contingutsMultimedia {
 
 	import flash.display.MovieClip;
 	import contingutsMultimedia.Constants;
