@@ -35,6 +35,12 @@ package contingutsMultimedia {
 			_moveDirection.y = p.y;
 		}
 
+		public function setGraphicsImplement(graphicsClip){
+			this.removeChild(_graphicsImplement);
+			_graphicsImplement = graphicsClip;
+			this.addChild(_graphicsImplement);
+		}
+
 		public function moveActor(go:Point){
 			var _sizeM:Point = map.getMapSize();
 			var _currX = (_position.x + go.x) % (_sizeM.x);

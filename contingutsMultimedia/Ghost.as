@@ -47,8 +47,10 @@ package contingutsMultimedia{
 		// Pacman clip
 		private var _pacman:Actor;
 
-		// Ghost fear graphic implementation
+		// Ghost graphics
 		var _ghostFearGraphic:MovieClip;
+		var _ghostNormalGraphic:MovieClip;
+		var _ghostEyesGraphic:MovieClip;
 
 
 		// Constructor
@@ -86,15 +88,17 @@ package contingutsMultimedia{
 				break;
 			}
 
-			// Initialize ghost fear graphic
-			_ghostFearGraphic = new fantasmica_malo();
 
 			// Start timer for ghosts
 			this.updateTimers(null);
 
+			// Initialize ghost graphics
+			_ghostFearGraphic = new fantasmica_malo();
+			_ghostEyesGraphic = new fantasmica_ojos();
 			var definedImplementation:Class = getDefinitionByName(ghostGraphicsClip) as Class;
-      		var ghostClip:MovieClip = new definedImplementation();
-			super(ghostClip, GHOSTSPEED, Constants.RIGHT, startPosition);
+      		_ghostNormalGraphic = new definedImplementation();
+
+			super(_ghostNormalGraphic, GHOSTSPEED, Constants.RIGHT, startPosition);
 		}
 
 		// Act ghost
@@ -113,7 +117,10 @@ package contingutsMultimedia{
 					_moveDirection = Constants.LEFT;
 				}
 
-				//Check direction to avoid "cornering" effect
+				// Update ghost eyes
+				moveEyes(_moveDirection);
+
+				// Check direction to avoid "cornering" effect
 				_deltaChange.x += _speed * _moveDirection.x;
 				_deltaChange.y += _speed * _moveDirection.y;
 
@@ -144,11 +151,26 @@ package contingutsMultimedia{
 					_inJail = true;
 					_path = null;
 					this.setSpeed(GHOSTSPEED * 2);
+					setGraphicsImplement(_ghostEyesGraphic);
 				}else{
 					dispatchEvent(new Event("gameOver"));
 				}
 			}
 
+		}
+
+
+		// Moves Ghost eyes to current moving direction
+		public function moveEyes(moveDirection){
+			if(moveDirection.equals(Constants.UP)){
+				_graphicsImplement.ojos.gotoAndStop(3);
+			}else if(moveDirection.equals(Constants.DOWN)){
+				_graphicsImplement.ojos.gotoAndStop(4);
+			}else if(moveDirection.equals(Constants.LEFT)){
+				_graphicsImplement.ojos.gotoAndStop(1);
+			}else{
+				_graphicsImplement.ojos.gotoAndStop(2);
+			}
 		}
 
 		// Updates ghost path
@@ -177,6 +199,7 @@ package contingutsMultimedia{
 				_pathStep = 1;
 				_path = _star.findPath(this.getPosition(), _pacman.getPosition());
 			}
+
 
 			// Print path on screen
 			/*if(_path){
@@ -294,8 +317,8 @@ package contingutsMultimedia{
 					});
 					_fearTimer.start();
 
-					// Add graphic to stack
-					this.addChild(_ghostFearGraphic);
+					// Change ghost apperance
+					setGraphicsImplement(_ghostFearGraphic);
 
 				}else{
 					trace("Fear off :-( ");
@@ -303,8 +326,8 @@ package contingutsMultimedia{
 					_inFear = false;
 					_path = null;
 
-					// Remove graphic from stack
-					this.removeChild(_ghostFearGraphic);
+					// Change ghost apperance
+					setGraphicsImplement(_ghostNormalGraphic);
 				}
 			}
 		}
