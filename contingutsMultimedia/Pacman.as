@@ -65,7 +65,10 @@ package contingutsMultimedia {
 					_deltaChange.y += _speed * _realDirection.y;
 					_deltaChange.x = 0;
 				}
-				
+
+				// Update head position
+				pacmanMoveHead(_realDirection);
+
 				// Check if delta causes a tileChange and update pacman position on map
 				if(Math.abs(_deltaChange.x) >= map.getTileSize()){
 					_deltaChange.x = 0;
@@ -81,6 +84,18 @@ package contingutsMultimedia {
 
 			// change our position
 			this.updateRealMapPosition();
+		}
+
+		public function pacmanMoveHead(moveDirection){
+			if(moveDirection.equals(Constants.UP)){
+				_graphicsImplement.gotoAndStop(1);
+			}else if(moveDirection.equals(Constants.DOWN)){
+				_graphicsImplement.gotoAndStop(2);
+			}else if(moveDirection.equals(Constants.LEFT)){
+				_graphicsImplement.gotoAndStop(3);
+			}else{
+				_graphicsImplement.gotoAndStop(4);
+			}
 		}
 
 		public function pacmanCanMove(item:String){

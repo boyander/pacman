@@ -67,7 +67,7 @@ package contingutsMultimedia {
 			var startPositionPacman = new Point(13,23);
 
 			// Setup new pacman character
-			pacman = new Pacman("PacmanClip", _mapa, startPositionPacman);
+			pacman = new Pacman("homerClip", _mapa, startPositionPacman);
 			this.addChild(pacman);
 
 			// Create ghost		
