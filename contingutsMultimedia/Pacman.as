@@ -46,7 +46,7 @@ package contingutsMultimedia {
 			
 			// Avoid movement change to hit a wall, this disables pacman to stop in the middle of a corridor
 			if((_realDirection.x != _moveDirection.x) || (_realDirection.y != _moveDirection.y)){
-				if(nextTile.getType() != Constants.WALL){
+				if( pacmanCanMove(nextTile.getType()) ){
 					nextTileR = nextTile;
 					_realDirection.x = _moveDirection.x;
 					_realDirection.y = _moveDirection.y;
@@ -54,7 +54,7 @@ package contingutsMultimedia {
 			}
 			
 			// If tile is not a wall, stand still
-			if( nextTileR.getType() != Constants.WALL){
+			if( pacmanCanMove(nextTileR.getType()) ){
 				
 				//Check direction to avoid "cornering" effect
 				if(_realDirection.y == 0){
@@ -81,6 +81,13 @@ package contingutsMultimedia {
 
 			// change our position
 			this.updateRealMapPosition();
+		}
+
+		public function pacmanCanMove(item:String){
+			if(item != Constants.WALL && item != Constants.JAILDOOR){
+				return true;
+			}
+			return false;
 		}
 	}
 }

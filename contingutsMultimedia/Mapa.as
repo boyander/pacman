@@ -102,7 +102,10 @@ package contingutsMultimedia {
 						break;
 						case "o":
 							_jailPosCache.push([column,row]);
-							mapArray[row][column] = new Item(Constants.NEUTRAL);
+							mapArray[row][column] = new Item(Constants.JAIL);
+						break;
+						case "-":
+							mapArray[row][column] = new Item(Constants.JAILDOOR);
 						break;
 						default:
 							mapArray[row][column] = new Item(Constants.NEUTRAL);

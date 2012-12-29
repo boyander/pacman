@@ -29,8 +29,6 @@ package contingutsMultimedia{
 
 		// Variables
 		private var _status:String;
-		private var _inFear:Boolean;
-		private var _inJail:Boolean;
 		private var _lastPosition:Point;
 		private var _ghostName:String;
 
@@ -40,9 +38,12 @@ package contingutsMultimedia{
 		private var _pathStep:uint;			
 		private var _pathcheck:MovieClip; // Debug variable path checker
 
-		// Timers
+		// Timer for normal/fight
 		private var _timer:Timer;
+		// Timer for ghost fear mode
 		private var _fearTimer:Timer;
+		// Timer for jail
+		private var _jailTimer:Timer;
 
 		// Pacman clip
 		private var _pacman:Actor;
@@ -62,8 +63,6 @@ package contingutsMultimedia{
 			_pacman = pacman;
 			_ghostName = ghostName;
 			_pathcheck = pathcheck;
-			_inFear = false;
-			_inJail = false;
 
 			// Set initial status
 			_status = Constants.NORMAL;
@@ -139,23 +138,23 @@ package contingutsMultimedia{
 					_pathStep++;
 				}
 			}
-			this.updateRealMapPosition();
-			this.updatePath();
 
 			// Check collision with pacman
 			if(this._position.equals(_pacman._position)){
-				if(_inFear){
+				if(_status == Constants.GHOST_FEAR){
 					dispatchEvent(new Event("eatGhost"));
-					trace("Pacman eats [" + _ghostName+"]");
-					setFear(false);
-					_inJail = true;
-					_path = null;
+					debugGhost("Pacman eats");
+					_status = Constants.GO_INSIDE_JAIL;
+
 					this.setSpeed(GHOSTSPEED * 2);
-					setGraphicsImplement(_ghostEyesGraphic);
 				}else{
 					dispatchEvent(new Event("gameOver"));
 				}
 			}
+
+			this.checkJail();
+			this.updateRealMapPosition();
+			this.updatePath();
 
 		}
 
@@ -173,33 +172,33 @@ package contingutsMultimedia{
 			}
 		}
 
+		public function setupPathTo(p:Point, ignoreNew:Boolean=false){
+			if(needNewPath() || ignoreNew){
+				_path = _star.findPath(this.getPosition(), p);
+				_pathStep = 1;
+			}
+		}
+
 		// Updates ghost path
 		public function updatePath(){
 
-			if(_inJail){
-				if(needNewPath()){
-					_pathStep = 1;
-					_path = _star.findPath(this.getPosition(), map.getJailPosition());
-				}
-				return;
+			switch(_status){
+				case Constants.NORMAL:
+					this.setupPathTo(map.getRandomPoint());
+					setGraphicsImplement(_ghostNormalGraphic);
+					break;
+				case Constants.GHOST_FEAR:
+					this.setupPathTo(map.getRandomPoint());
+					setGraphicsImplement(_ghostFearGraphic);
+					break;
+				case Constants.FIGHT:
+					this.setupPathTo(_pacman.getPosition(),true);
+					break;
+				case Constants.GO_INSIDE_JAIL:
+					this.setupPathTo(map.getJailPosition());
+					setGraphicsImplement(_ghostEyesGraphic);
+					break;
 			}
-
-			if(_inFear){
-				if(needNewPath()){
-					_pathStep = 1;
-					_path = _star.findPath(this.getPosition(), map.getRandomPoint());
-				}
-				return;
-			}
-
-			if(_status == Constants.NORMAL && needNewPath()){
-				_pathStep = 1;
-				_path = _star.findPath(this.getPosition(), map.getRandomPoint());
-			} else if (_status == Constants.FIGHT){
-				_pathStep = 1;
-				_path = _star.findPath(this.getPosition(), _pacman.getPosition());
-			}
-
 
 			// Print path on screen
 			/*if(_path){
@@ -248,7 +247,7 @@ package contingutsMultimedia{
 				}
 
 				_path = null;
-				trace("Goes Random ["+_ghostName+"]");
+				debugGhost("Goes Random");
 			}else if(_status == Constants.NORMAL){
 				_status = Constants.FIGHT;
 				
@@ -271,7 +270,7 @@ package contingutsMultimedia{
 						_timer.delay = 4000;
 					break;
 				}
-				trace("Goes Fight ["+_ghostName+"]");
+				debugGhost("Goes Fight");
 			}
 
 			_timer.reset();
@@ -298,38 +297,55 @@ package contingutsMultimedia{
 			}
 			// If p is equal to last position, we cannot move to this point
 			// This causes a ghost to cannot reverse direction
-			if(p.equals(_lastPosition) && !_inFear){
+			if(p.equals(_lastPosition) && _status != Constants.GO_INSIDE_JAIL){
 				return false;
 			}
 			return true;
 		}
 
-		public function setFear(b:Boolean){
-			if(!_inJail){
-				if(b){
-					trace("Fear ON!");
-					_timer.stop();
-					_inFear = true;
-					_path = null;
-					_fearTimer = new Timer(Constants.FEAR_TIME, 1);
-					_fearTimer.addEventListener("timer", function(){
-						setFear(false);
-					});
-					_fearTimer.start();
+		public function checkJail(){
+			//debugGhost(map.getTileAtPoint(_position.x, _position.y).getType());
 
-					// Change ghost apperance
-					setGraphicsImplement(_ghostFearGraphic);
-
-				}else{
-					trace("Fear off :-( ");
-					_timer.start();
-					_inFear = false;
-					_path = null;
-
-					// Change ghost apperance
-					setGraphicsImplement(_ghostNormalGraphic);
-				}
+			// Check if ghost is currently inside the jail		
+			if(_status == Constants.GO_INSIDE_JAIL && map.getTileAtPoint(_position.x, _position.y).getType() == Constants.JAIL){
+				debugGhost("Jail timer starts!");
+				_jailTimer = new Timer(Constants.JAIL_TIME, 1);
+				_jailTimer.addEventListener("timer", function(){
+					_status = Constants.NORMAL;
+					setSpeed(GHOSTSPEED);
+					debugGhost("Bye Jail!");
+				});
+				_jailTimer.start();
 			}
+		}
+
+
+		public function setFear(){
+
+			// Reset timer if ghost is on fear and another fear event is called
+			if(_status == Constants.GHOST_FEAR){
+				_fearTimer.reset();
+			}
+
+			// If not in jail, go to fear mode and start timer
+			if(_status != Constants.GO_INSIDE_JAIL){
+				debugGhost("Fear ON!");
+				_status = Constants.GHOST_FEAR;
+				_timer.stop();
+				_fearTimer = new Timer(Constants.FEAR_TIME, 1);
+				_fearTimer.addEventListener("timer", function(){
+					if(_status == Constants.GHOST_FEAR){
+						_status = Constants.NORMAL;
+						debugGhost("Fear off :-( ");
+						_timer.start();
+					}
+				});
+				_fearTimer.start();
+			}
+		}
+
+		public function debugGhost(s:String){
+			trace("Ghost ["+_ghostName+"] s["+_status+"] -> "+ s);
 		}
 
 	}

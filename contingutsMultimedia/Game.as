@@ -63,7 +63,11 @@ package contingutsMultimedia {
 			// DEBUG: Path checker
 			this.addChild(pchecker);
 
-			pacman = new Pacman("PacmanClip", _mapa, new Point(1,1));
+			// Pacman start position
+			var startPositionPacman = new Point(13,23);
+
+			// Setup new pacman character
+			pacman = new Pacman("PacmanClip", _mapa, startPositionPacman);
 			this.addChild(pacman);
 
 			// Create ghost		
@@ -103,7 +107,7 @@ package contingutsMultimedia {
 				trace("UUUUH CHILIII");
 				soundFX.play();
 				for(var i:uint; i < ghosts.length; i++){
-					ghosts[i].setFear(true);
+					ghosts[i].setFear();
 				}
 			}else if (e.type == "eatGhost"){
 				trace("Eat ghost");
