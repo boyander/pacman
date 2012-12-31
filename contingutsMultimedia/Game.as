@@ -12,12 +12,10 @@ package contingutsMultimedia {
 	import contingutsMultimedia.Ghost;
 	import contingutsMultimedia.Mapa;
 	import contingutsMultimedia.Constants;
+	import contingutsMultimedia.Scoreboard;
 	import flash.events.Event;
 	import flash.events.KeyboardEvent;
 	import flash.ui.Keyboard;
-
-	import flash.text.TextField;
-	import flash.text.TextFormat;
 
 	import flash.media.Sound;
 	import flash.net.URLRequest;
@@ -30,21 +28,26 @@ package contingutsMultimedia {
 		public var ghosts:Array;
 		public var names:Array = [Constants.BLINKY, Constants.INKY, Constants.PINKY, Constants.CLYDE];
 
+		// DEBUG: Path checker 
 		private var pchecker:MovieClip = new MovieClip();
 
 		// Sound objects
 		var soundFX:Sound;
 
-		// Global score
-		public var score:Number;
-		public var scoreText:TextField;
+		// Scoreboard
+		public var scoreboard:Scoreboard;
 
 		public function Game(gameMap:String){
 			_offset = new Point(0,25);
 			_mapa = new Mapa(gameMap, _offset);
 			_mapa.dispatcher.addEventListener("mapaLoaded", mapaCargado);
 			ghosts = new Array();
-			this.setupScoreBoard();
+
+			// Setup lives and score
+			scoreboard = new Scoreboard();
+			scoreboard.addEventListener("gameOver", gameOver);
+
+			this.addChild(scoreboard);
 
 			// Load chili sound
 			soundFX = new Sound();
@@ -74,6 +77,7 @@ package contingutsMultimedia {
 			for(var i:uint; i < names.length; i++){
 				var ghost:Ghost = new Ghost(names[i], Constants.graficImplementation(names[i]), pacman, _mapa, pchecker);
 				ghost.addEventListener("eatGhost", eatEvent);
+				ghost.addEventListener("killPacman", eatEvent);
 				ghosts.push(ghost);
 				this.addChild(ghost);
 			}
@@ -101,18 +105,25 @@ package contingutsMultimedia {
 		// Eat event
 		public function eatEvent(e:Event){
 			if(e.type == "eatPac"){
-				this.addScore(10);
+				scoreboard.addScore(10);
 			}else if (e.type == "eatPowerUp"){
-				this.addScore(50);
-				trace("UUUUH CHILIII");
+				scoreboard.addScore(50);
+				trace("PowerUp!");
 				soundFX.play();
 				for(var i:uint; i < ghosts.length; i++){
 					ghosts[i].setFear();
 				}
 			}else if (e.type == "eatGhost"){
-				trace("Eat ghost");
-				this.addScore(200);
+				trace("Eat ghost +200");
+				scoreboard.addScore(200);
+			}else if (e.type == "killPacman"){
+				trace("Ohh, sorry pacman!");
+				scoreboard.removeLive();
 			}
+		}
+
+		public function gameOver(e:Event){
+			trace("GAME OVER");
 		}
 
 		// Detects key press
@@ -132,24 +143,5 @@ package contingutsMultimedia {
 					break;
 			}
 		}
-
-		public function addScore(s:Number){
-			score += s;
-			scoreText.text = "Score: " + String(score);
-		}
-
-		public function setupScoreBoard(){
-			score = 0;
-			scoreText = new TextField();
-			scoreText.name = "title";
-			scoreText.mouseEnabled = false;
-
-			var myformat:TextFormat = new TextFormat();
-			myformat.color = 0x336699;
-			myformat.size = 20;
-			scoreText.defaultTextFormat = myformat;
-			this.addChild(scoreText);
-		}
-
 	}
 }

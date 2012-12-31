@@ -11,6 +11,9 @@ package contingutsMultimedia{
 
 	public class Constants{
 
+		// Scoreboard constants
+		public static const GAMESTARTLIVES:Number = 3;
+
 		// Map tiles collision constants
 		public static const WALL:String = "Wall";
 		public static const PAC:String = "Pac";

@@ -140,7 +140,7 @@ package contingutsMultimedia{
 			}
 
 			// Check collision with pacman
-			if(this._position.equals(_pacman._position)){
+			if(_position.equals(_pacman._position)){
 				if(_status == Constants.GHOST_FEAR){
 					dispatchEvent(new Event("eatGhost"));
 					debugGhost("Pacman eats");
@@ -148,16 +148,14 @@ package contingutsMultimedia{
 
 					this.setSpeed(GHOSTSPEED * 2);
 				}else{
-					dispatchEvent(new Event("gameOver"));
+					dispatchEvent(new Event("killPacman"));
 				}
 			}
 
 			this.checkJail();
 			this.updateRealMapPosition();
 			this.updatePath();
-
 		}
-
 
 		// Moves Ghost eyes to current moving direction
 		public function moveEyes(moveDirection){
