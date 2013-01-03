@@ -74,7 +74,6 @@ package contingutsMultimedia{
 				break;
 				case Constants.INKY:
 					_status = Constants.FIGHT;
-
 				break;
 				case Constants.PINKY:
 					_status = Constants.NORMAL;
@@ -100,61 +99,68 @@ package contingutsMultimedia{
 			super(_ghostNormalGraphic, GHOSTSPEED, Constants.RIGHT, startPosition);
 		}
 
+		// Reset ghost behaviour
+		public function reset(){
+			// Set initial status
+			_status = Constants.NORMAL;
+			// Normal ghost
+			setGraphicsImplement(_ghostNormalGraphic);
+		}
+
 		// Act ghost
 		public function actuate(){
 			
-			if(_path != null && _pathStep < _path.length){
-				var currentStep:Node = _path[_pathStep];
-				
-				if(currentStep.getY() - _position.y < 0){
-					_moveDirection = Constants.UP;
-				}else if(currentStep.getY() - _position.y > 0){
-					_moveDirection = Constants.DOWN;
-				}else if(currentStep.getX() - _position.x > 0){
-					_moveDirection = Constants.RIGHT;
-				}else{
-					_moveDirection = Constants.LEFT;
-				}
-
-				// Update ghost eyes
-				moveEyes(_moveDirection);
-
-				// Check direction to avoid "cornering" effect
-				_deltaChange.x += _speed * _moveDirection.x;
-				_deltaChange.y += _speed * _moveDirection.y;
-
-				if(Math.abs(_deltaChange.x) >= map.getTileSize()) {
-					_deltaChange.x = 0;
-					_deltaChange.y = 0;
-					_lastPosition = new Point(_position.x, _position.y);
-					moveActor(_moveDirection);
-					_pathStep++;
-				}
-				if(Math.abs(_deltaChange.y) >= map.getTileSize()) {
-					_deltaChange.x = 0;
-					_deltaChange.y = 0;
-					_lastPosition = new Point(_position.x, _position.y);
-					moveActor(_moveDirection);
-					_pathStep++;
-				}
-			}
-
-			// Check collision with pacman
+			// Check collision with pacman and dispatches events on collision
 			if(_position.equals(_pacman._position)){
+				trace(_status);
 				if(_status == Constants.GHOST_FEAR){
 					dispatchEvent(new Event("eatGhost"));
 					debugGhost("Pacman eats");
 					_status = Constants.GO_INSIDE_JAIL;
 
 					this.setSpeed(GHOSTSPEED * 2);
-				}else{
+				}else if(_status == Constants.FIGHT || _status == Constants.NORMAL){
 					dispatchEvent(new Event("killPacman"));
 				}
 			}
 
+			// Checks jail timer and releases ghost
 			this.checkJail();
-			this.updateRealMapPosition();
-			this.updatePath();
+
+			// Updates ghost behaviour depending on state
+			this.updateGhostBehaviour();
+
+			// Update actor
+			this.actorUpdate();
+		}
+
+		override public function getNextMoveDirection(){
+			// Update ghost moveDirection based on next direction and current position
+			if(_path != null && _pathStep < _path.length){
+				var currentStep:Node = _path[_pathStep];
+				var pushedDirection:Point;
+				if(currentStep.getY() - _position.y < 0){
+					pushedDirection = Constants.UP;
+				}else if(currentStep.getY() - _position.y > 0){
+					pushedDirection = Constants.DOWN;
+				}else if(currentStep.getX() - _position.x > 0){
+					pushedDirection = Constants.RIGHT;
+				}else{
+					pushedDirection = Constants.LEFT;
+				}
+				_lastPosition = new Point(_position.x, _position.y);
+				// Update ghost eyes
+				moveEyes(pushedDirection);
+				// Setup direction
+				this.setMoveDirection(pushedDirection);
+			}
+		}
+		
+		override public function overflowTile(){
+			// Increment path step counter
+			if(_path != null && _pathStep < _path.length){
+				_pathStep++;
+			}
 		}
 
 		// Moves Ghost eyes to current moving direction
@@ -178,7 +184,7 @@ package contingutsMultimedia{
 		}
 
 		// Updates ghost path
-		public function updatePath(){
+		public function updateGhostBehaviour(){
 
 			switch(_status){
 				case Constants.NORMAL:
@@ -227,7 +233,7 @@ package contingutsMultimedia{
 				// Random timing mode depending on ghost
 				switch(_ghostName){
 					case Constants.BLINKY:
-						_timer.delay = 3000;
+						_timer.delay = 6000;
 					break;
 					case Constants.INKY:
 						_timer.delay = 7000;
@@ -240,7 +246,7 @@ package contingutsMultimedia{
 						_timer.delay = 12000;
 					break;
 					default:
-						_timer.delay = 4000;
+						_timer.delay = 6000;
 					break;
 				}
 
@@ -252,7 +258,7 @@ package contingutsMultimedia{
 				// Normal timing mode depending on ghost
 				switch(_ghostName){
 					case Constants.BLINKY:
-						_timer.delay = 20000;
+						_timer.delay = 15000;
 					break;
 					case Constants.INKY:
 						_timer.delay = 10000;

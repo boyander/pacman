@@ -27,7 +27,7 @@ package contingutsMultimedia {
 		public var pacman:Pacman;
 		public var ghosts:Array;
 		public var names:Array = [Constants.BLINKY, Constants.INKY, Constants.PINKY, Constants.CLYDE];
-
+		public var paused:Boolean;
 		// DEBUG: Path checker 
 		private var pchecker:MovieClip = new MovieClip();
 
@@ -42,6 +42,8 @@ package contingutsMultimedia {
 			_mapa = new Mapa(gameMap, _offset);
 			_mapa.dispatcher.addEventListener("mapaLoaded", mapaCargado);
 			ghosts = new Array();
+
+			paused = false;
 
 			// Setup lives and score
 			scoreboard = new Scoreboard();
@@ -70,7 +72,7 @@ package contingutsMultimedia {
 			var startPositionPacman = new Point(13,23);
 
 			// Setup new pacman character
-			pacman = new Pacman("homerClip", _mapa, startPositionPacman);
+			pacman = new Pacman("PacmanClip", _mapa, startPositionPacman);
 			this.addChild(pacman);
 
 			// Create ghost		
@@ -92,14 +94,16 @@ package contingutsMultimedia {
 		// Updates all objects of game
 		public function frameUpdate(e:Event){
 			
-			// Update pacman
-			pacman.actuate();
-			
-			// Update ghosts
-			for(var i:uint; i < ghosts.length; i++){
-				ghosts[i].actuate();
+			if(!paused){
+				// Update pacman
+				pacman.actuate();
+				
+				// Update ghosts
+				for(var i:uint; i < ghosts.length; i++){
+					ghosts[i].actuate();
+				}
+				_mapa.animateSlices();
 			}
-			_mapa.animateSlices();
 		}
 
 		// Eat event
@@ -124,22 +128,23 @@ package contingutsMultimedia {
 
 		public function gameOver(e:Event){
 			trace("GAME OVER");
+			paused = true;
 		}
 
 		// Detects key press
 		public function detectKey(event:KeyboardEvent):void{
 			switch (event.keyCode){
 				case Keyboard.DOWN :
-					pacman.setMoveDirection(Constants.DOWN);
+					pacman.updateMovement(Constants.DOWN);
 					break;
 				case Keyboard.UP :
-					pacman.setMoveDirection(Constants.UP);
+					pacman.updateMovement(Constants.UP);
 					break;
 				case Keyboard.LEFT :
-					pacman.setMoveDirection(Constants.LEFT);
+					pacman.updateMovement(Constants.LEFT);
 					break;
 				case Keyboard.RIGHT :
-					pacman.setMoveDirection(Constants.RIGHT);
+					pacman.updateMovement(Constants.RIGHT);
 					break;
 			}
 		}

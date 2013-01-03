@@ -125,7 +125,7 @@ package contingutsMultimedia {
 			return new Point(xpos,ypos);
 		}
 		public function getTileAtPoint(x:Number, y:Number){
-			// If on map limits return no wall
+			// If on map limits return neutral space
 			if (x > mapArray[0].length-1 || x < 0 || y > mapArray.length-1 || y < 0){
 				return new Item(Constants.NEUTRAL);
 			}
