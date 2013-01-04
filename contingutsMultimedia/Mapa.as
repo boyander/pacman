@@ -8,7 +8,6 @@ Description:
 package contingutsMultimedia {
 
 	import flash.events.Event;
-	import flash.events.EventDispatcher;
 	import flash.net.URLLoader;
 	import flash.net.URLRequest;
 	import flash.geom.Point;
@@ -26,9 +25,6 @@ package contingutsMultimedia {
 
 		// Tile Size
 		private var _tileSize:Number = 20;
-
-		// Event dispatcher
-		public var dispatcher:EventDispatcher = new EventDispatcher();
 
 		// Graphics array
 		public var mapArray:Array;
@@ -115,13 +111,13 @@ package contingutsMultimedia {
 				}
 			}
 			this.drawMap();
-			dispatcher.dispatchEvent(new Event("mapaLoaded"));
+			dispatchEvent(new Event("mapaLoaded"));
 		}
 
 
-		public function getPixelAtPosition(x:Number, y:Number){
-			var xpos = (_mapOffset.x + x * _tileSize);
-			var ypos = (_mapOffset.y + y * _tileSize);
+		public function tileToPixel(x:Number, y:Number){
+			var xpos = (_mapOffset.x + x * _tileSize) + _tileSize/2;
+			var ypos = (_mapOffset.y + y * _tileSize) + _tileSize/2;
 			return new Point(xpos,ypos);
 		}
 		public function getTileAtPoint(x:Number, y:Number){
@@ -193,10 +189,10 @@ package contingutsMultimedia {
 			if(mapArray[p.y][p.x].getType() != Constants.NEUTRAL){
 				switch(mapArray[p.y][p.x].getType()){
 					case Constants.PAC:
-						dispatcher.dispatchEvent(new Event("eatPac"));
+						dispatchEvent(new Event("eatPac"));
 					break;
 					case Constants.POWERUP:
-						dispatcher.dispatchEvent(new Event("eatPowerUp"));
+						dispatchEvent(new Event("eatPowerUp"));
 					break;
 				}
 				graphicsMap.removeChild(mapArray[p.y][p.x]);

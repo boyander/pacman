@@ -22,7 +22,6 @@ package contingutsMultimedia{
 		public static const JAIL:String = "Jail";
 		public static const JAILDOOR:String = "JailDoor";
 
-
 		// Valid directions
 		public static const UP:Point = new Point(0,-1);
 		public static const DOWN:Point = new Point(0,1);

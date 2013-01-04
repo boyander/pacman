@@ -64,10 +64,22 @@ package contingutsMultimedia{
 			_ghostName = ghostName;
 			_pathcheck = pathcheck;
 
+			this.initializeGhosts();
+
+			// Start timer for ghosts
+			this.updateTimers(null);
+
+			// Initialize ghost graphics
+			_ghostFearGraphic = new fantasmica_malo();
+			_ghostEyesGraphic = new fantasmica_ojos();
+			var definedImplementation:Class = getDefinitionByName(ghostGraphicsClip) as Class;
+      		_ghostNormalGraphic = new definedImplementation();
+
+			super(_ghostNormalGraphic, GHOSTSPEED, Constants.RIGHT, startPosition);
+		}
+
+		public function initializeGhosts(){
 			// Set initial status
-			_status = Constants.NORMAL;
-			
-			// Random timing mode
 			switch(_ghostName){
 				case Constants.BLINKY:
 					_status = Constants.FIGHT;
@@ -85,26 +97,25 @@ package contingutsMultimedia{
 					_status = Constants.NORMAL;
 				break;
 			}
-
-
-			// Start timer for ghosts
-			this.updateTimers(null);
-
-			// Initialize ghost graphics
-			_ghostFearGraphic = new fantasmica_malo();
-			_ghostEyesGraphic = new fantasmica_ojos();
-			var definedImplementation:Class = getDefinitionByName(ghostGraphicsClip) as Class;
-      		_ghostNormalGraphic = new definedImplementation();
-
-			super(_ghostNormalGraphic, GHOSTSPEED, Constants.RIGHT, startPosition);
 		}
 
 		// Reset ghost behaviour
-		public function reset(){
+		public function resetGhost(){
 			// Set initial status
 			_status = Constants.NORMAL;
 			// Normal ghost
 			setGraphicsImplement(_ghostNormalGraphic);
+
+			// Reset speed
+			setSpeed(GHOSTSPEED);
+
+			// Reset positioning
+			this.resetActor();
+
+			// Reset timer
+			_timer.stop();
+			_timer = null;
+			this.updateTimers(null);
 		}
 
 		// Act ghost

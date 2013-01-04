@@ -9,6 +9,7 @@ package contingutsMultimedia {
 
 	import flash.geom.Point;
 	import flash.utils.getDefinitionByName;
+	import flash.events.Event;
 	import contingutsMultimedia.Actor;
 	import flash.display.MovieClip;
 	import contingutsMultimedia.Mapa;
@@ -24,15 +25,32 @@ package contingutsMultimedia {
 		// Pushed direction
 		public var pushedDirection:Point;
 
+		// Pacman clip
+		var pacmanClip:MovieClip;
+
 		// Constructor
 		public function Pacman(pacmanGraphicsClip:String, m:Mapa, startPosition:Point){
 			map = m;
 			var definedImplementation:Class = getDefinitionByName(pacmanGraphicsClip) as Class;
-      		var pacmanClip:MovieClip = new definedImplementation();
+      		pacmanClip = new definedImplementation();
       		var startDirection:Point = Constants.RIGHT;
       		pushedDirection = startDirection;
 			super(pacmanClip, STARTSPEED, startDirection, startPosition);
 			pacmanMoveHead(startDirection);
+		}
+
+		public function resetPacman(){
+			pacmanClip.pC.gotoAndPlay(1);
+			pacmanMoveHead(Constants.RIGHT);
+			this.resetActor();
+		}
+
+		public function diePacman(){
+			pacmanClip.pC.gotoAndPlay(10);
+			pacmanClip.pC.addEventListener("diePacmanAnimation", function(){
+				trace("Pacman Dies!");
+				dispatchEvent(new Event("pacmanDies"));
+			});
 		}
 
 		// Pacman update movement

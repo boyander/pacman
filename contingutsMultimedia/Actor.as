@@ -20,14 +20,25 @@ package contingutsMultimedia {
 		public var _position:Point;
 		public var map:Mapa;
 		public var _graphicsImplement:MovieClip;
+		public var _startPosition:Point;
 
-		public function Actor(graphicsClip:MovieClip, speed:Number, moveDir:Point, position:Point){
+		public var _actorOffset:Point;
+
+		public function Actor(graphicsClip:MovieClip, speed:Number, moveDir:Point, startPosition:Point){
 			_deltaChange = new Point(0,0);
 			_speed = speed;
 			_moveDirection = new Point(moveDir.x,moveDir.y); // MarcP, BUG#01-Create new object to not override Constants
-			_position = position;
+			_startPosition = startPosition;
+			_position = new Point(startPosition.x,startPosition.y);
 			_graphicsImplement = graphicsClip;
+			_actorOffset = new Point(_graphicsImplement.width/2,_graphicsImplement.height/2);
 			this.addChild(_graphicsImplement);
+		}
+
+		public function resetActor(){
+			_position = new Point(_startPosition.x,_startPosition.y);
+			setMoveDirection(new Point(0,0));
+			moveActor();
 		}
 
 		public function setMoveDirection(p:Point){
@@ -65,10 +76,6 @@ package contingutsMultimedia {
 			return _position;
 		}
 
-		public function resetActor(){
-			
-		}
-
 		public function actorUpdate(){
 
 			this.getNextMoveDirection();
@@ -94,9 +101,9 @@ package contingutsMultimedia {
 				}
 			}
 
-			var mapTileToPixel:Point = map.getPixelAtPosition(_position.x, _position.y);
-			this.x = mapTileToPixel.x + _deltaChange.x;
-			this.y = mapTileToPixel.y + _deltaChange.y;
+			var mapTileToPixel:Point = map.tileToPixel(_position.x, _position.y);
+			this.x = mapTileToPixel.x + _deltaChange.x - _actorOffset.x;
+			this.y = mapTileToPixel.y + _deltaChange.y - _actorOffset.y;
 		}
 
 		public function setSpeed(s:Number){

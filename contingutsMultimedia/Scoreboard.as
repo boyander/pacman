@@ -75,9 +75,7 @@ package contingutsMultimedia {
 				this.removeChild(liv);
 			}
 			lives--;
-			if(lives <= 0){
-				dispatchEvent(new Event("gameOver"));
-			}
+			return (lives > 0);
 		}
 	}
 }

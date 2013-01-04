@@ -20,6 +20,10 @@ package contingutsMultimedia {
 	import flash.media.Sound;
 	import flash.net.URLRequest;
 
+	import com.gskinner.motion.GTween;
+	import com.gskinner.motion.easing.*;
+
+
 	public class Game extends MovieClip{
 
 		private var _mapa:Mapa;
@@ -28,8 +32,12 @@ package contingutsMultimedia {
 		public var ghosts:Array;
 		public var names:Array = [Constants.BLINKY, Constants.INKY, Constants.PINKY, Constants.CLYDE];
 		public var paused:Boolean;
+
 		// DEBUG: Path checker 
 		private var pchecker:MovieClip = new MovieClip();
+
+		// Start position pacman
+		var startPositionPacman:Point;
 
 		// Sound objects
 		var soundFX:Sound;
@@ -38,76 +46,97 @@ package contingutsMultimedia {
 		public var scoreboard:Scoreboard;
 
 		public function Game(gameMap:String){
-			_offset = new Point(0,25);
-			_mapa = new Mapa(gameMap, _offset);
-			_mapa.dispatcher.addEventListener("mapaLoaded", mapaCargado);
+
+			// DEBUG: Path checker
+			this.addChild(pchecker);
+
+			// Initialize ghosts
 			ghosts = new Array();
 
-			paused = false;
+			// Start map instance with map offset
+			_offset = new Point(0,25);
+			_mapa = new Mapa(gameMap, _offset);
+			_mapa.addEventListener("eatPac", eventProcessor);
+			_mapa.addEventListener("eatPowerUp", eventProcessor);
+			_mapa.addEventListener("mapaLoaded", function(e:Event){
+				// When map loaded reset game and spawn characters
+				resetGame();
+			});
+			this.addChild(_mapa); // Add map clip and start listeners
 
-			// Setup lives and score
+			// Setup scoreboard (counts lives and scores)
 			scoreboard = new Scoreboard();
-			scoreboard.addEventListener("gameOver", gameOver);
-
 			this.addChild(scoreboard);
 
 			// Load chili sound
 			soundFX = new Sound();
 			soundFX.load(new URLRequest("audios/chili.mp3"));
+
+			// Background sound
 			var soundBG:Sound = new Sound();
 			soundBG.load(new URLRequest("audios/bg_theme.mp3"));
 			//soundBG.play();
-
 		}
 
-		public function mapaCargado(e:Event){
+		public function resetGame(){
+
+			trace("---- Reseting characters ----");
+
+			// Unpause game
+			paused = false;
 			
-			// Add map to game clip			
-			this.addChild(_mapa);
-
-			// DEBUG: Path checker
-			this.addChild(pchecker);
-
 			// Pacman start position
-			var startPositionPacman = new Point(13,23);
+			startPositionPacman = new Point(13,23);
 
 			// Setup new pacman character
+			if(pacman){
+				this.removeChild(pacman);
+				pacman = null;
+			}
 			pacman = new Pacman("PacmanClip", _mapa, startPositionPacman);
 			this.addChild(pacman);
 
-			// Create ghost		
+			// Remove current ghosts & listeners
+			var ghost:Ghost;
+			while(ghost = ghosts.pop()){
+				ghost.removeEventListener("eatGhost", eventProcessor);
+				ghost.removeEventListener("killPacman", eventProcessor);
+				this.removeChild(ghost);
+			}
+
+			// Create ghosts		
 			for(var i:uint; i < names.length; i++){
-				var ghost:Ghost = new Ghost(names[i], Constants.graficImplementation(names[i]), pacman, _mapa, pchecker);
-				ghost.addEventListener("eatGhost", eatEvent);
-				ghost.addEventListener("killPacman", eatEvent);
+				ghost = new Ghost(names[i], Constants.graficImplementation(names[i]), pacman, _mapa, pchecker);
+				ghost.addEventListener("eatGhost", eventProcessor);
+				ghost.addEventListener("killPacman", eventProcessor);
 				ghosts.push(ghost);
 				this.addChild(ghost);
 			}
 
-			_mapa.dispatcher.addEventListener("eatPac", eatEvent);
-			_mapa.dispatcher.addEventListener("eatPowerUp", eatEvent);
-
-			// Objects updater
+			// Update characters and objects
 			this.addEventListener(Event.ENTER_FRAME, frameUpdate);
 		}
 
+
+
+
 		// Updates all objects of game
 		public function frameUpdate(e:Event){
-			
 			if(!paused){
-				// Update pacman
-				pacman.actuate();
-				
 				// Update ghosts
 				for(var i:uint; i < ghosts.length; i++){
 					ghosts[i].actuate();
 				}
+				// Update pacman
+				pacman.actuate();
+
+				// Map bright animation
 				_mapa.animateSlices();
 			}
 		}
 
 		// Eat event
-		public function eatEvent(e:Event){
+		public function eventProcessor(e:Event){
 			if(e.type == "eatPac"){
 				scoreboard.addScore(10);
 			}else if (e.type == "eatPowerUp"){
@@ -122,13 +151,53 @@ package contingutsMultimedia {
 				scoreboard.addScore(200);
 			}else if (e.type == "killPacman"){
 				trace("Ohh, sorry pacman!");
-				scoreboard.removeLive();
+				pacman.diePacman();
+				for(var j:uint; j < ghosts.length; j++){
+					ghosts[j].visible = false;
+				}
+				paused = true;
+				if(scoreboard.removeLive()){
+					pacman.addEventListener("pacmanDies", function(e:Event){
+						resetGame();
+					});
+				}else{
+					this.gameOver();
+				}
 			}
 		}
 
-		public function gameOver(e:Event){
+		public function gameOver(){
 			trace("GAME OVER");
-			paused = true;
+
+			// Remove pacman
+			if(pacman){
+				this.removeChild(pacman);
+				pacman = null;
+			}
+
+			// Remove current ghosts & listeners
+			var ghost:Ghost;
+			while(ghost = ghosts.pop()){
+				ghost.removeEventListener("eatGhost", eventProcessor);
+				ghost.removeEventListener("killPacman", eventProcessor);
+				this.removeChild(ghost);
+			}
+
+			// Remove Mapa
+			if(_mapa){
+				this.removeChild(_mapa);
+			}
+
+			// Play gameover animation
+			var gameOverGraphic:MovieClip = new gameOverClip();
+			this.addChild(gameOverGraphic);
+			// place in topcenter
+			gameOverGraphic.x = stage.width/2 - gameOverGraphic.width/2;
+			gameOverGraphic.y = -gameOverGraphic.height;
+
+			var tween:GTween = new GTween(gameOverGraphic,20,null,{ease:Sine.easeInOut});
+			tween.data = {y:(stage.height/2 - gameOverGraphic.height/2)};
+
 		}
 
 		// Detects key press
