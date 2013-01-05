@@ -12,6 +12,8 @@ package contingutsMultimedia {
 	import flash.text.TextField;
 	import flash.text.TextFormat;
 	import flash.events.Event;
+	import com.gskinner.motion.GTween;
+	import com.gskinner.motion.easing.*;
 
 	public class Scoreboard extends MovieClip{
 
@@ -67,6 +69,14 @@ package contingutsMultimedia {
 		public function addScore(s:Number){
 			score += s;
 			scoreText.text = "Score: " + String(score);
+		}
+
+		public function showMeTheScore(p:Point){
+			var tween:GTween = new GTween(this.scoreText,3,
+				{x:p.x - this.scoreText.width/2,y:p.y},
+				{ease:Sine.easeIn}
+			);
+
 		}
 
 		public function removeLive(){

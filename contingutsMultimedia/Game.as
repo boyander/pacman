@@ -15,14 +15,17 @@ package contingutsMultimedia {
 	import contingutsMultimedia.Scoreboard;
 	import flash.events.Event;
 	import flash.events.KeyboardEvent;
+	import flash.events.MouseEvent;
 	import flash.ui.Keyboard;
+	import flash.filters.BlurFilter;
+
 
 	import flash.media.Sound;
 	import flash.net.URLRequest;
 
 	import com.gskinner.motion.GTween;
 	import com.gskinner.motion.easing.*;
-
+	import com.gskinner.motion.plugins.BlurPlugin;
 
 	public class Game extends MovieClip{
 
@@ -46,6 +49,9 @@ package contingutsMultimedia {
 		public var scoreboard:Scoreboard;
 
 		public function Game(gameMap:String){
+
+			// Initialize blur plugin
+			BlurPlugin.install();
 
 			// DEBUG: Path checker
 			this.addChild(pchecker);
@@ -97,14 +103,10 @@ package contingutsMultimedia {
 			this.addChild(pacman);
 
 			// Remove current ghosts & listeners
-			var ghost:Ghost;
-			while(ghost = ghosts.pop()){
-				ghost.removeEventListener("eatGhost", eventProcessor);
-				ghost.removeEventListener("killPacman", eventProcessor);
-				this.removeChild(ghost);
-			}
+			removeGhosts();
 
-			// Create ghosts		
+			// Create ghosts
+			var ghost:Ghost;	
 			for(var i:uint; i < names.length; i++){
 				ghost = new Ghost(names[i], Constants.graficImplementation(names[i]), pacman, _mapa, pchecker);
 				ghost.addEventListener("eatGhost", eventProcessor);
@@ -151,53 +153,70 @@ package contingutsMultimedia {
 				scoreboard.addScore(200);
 			}else if (e.type == "killPacman"){
 				trace("Ohh, sorry pacman!");
-				pacman.diePacman();
-				for(var j:uint; j < ghosts.length; j++){
-					ghosts[j].visible = false;
-				}
 				paused = true;
-				if(scoreboard.removeLive()){
-					pacman.addEventListener("pacmanDies", function(e:Event){
+				pacman.diePacman();
+				removeGhosts();
+				pacman.addEventListener("pacmanDies", function(e:Event){
+					if(scoreboard.removeLive()){
 						resetGame();
-					});
-				}else{
-					this.gameOver();
-				}
+					}else{
+						gameOver();
+					}					
+				});
+			}
+		}
+
+		public function removeGhosts(){
+			// Remove current ghosts & listeners
+			var ghost:Ghost;
+			while(ghost = ghosts.pop()){
+				ghost.resetGhost(); // Make sure garbage collector removes timers
+				ghost.removeEventListener("eatGhost", eventProcessor);
+				ghost.removeEventListener("killPacman", eventProcessor);
+				this.removeChild(ghost);
 			}
 		}
 
 		public function gameOver(){
 			trace("GAME OVER");
 
-			// Remove pacman
+			// Invisible pacman
 			if(pacman){
-				this.removeChild(pacman);
-				pacman = null;
-			}
-
-			// Remove current ghosts & listeners
-			var ghost:Ghost;
-			while(ghost = ghosts.pop()){
-				ghost.removeEventListener("eatGhost", eventProcessor);
-				ghost.removeEventListener("killPacman", eventProcessor);
-				this.removeChild(ghost);
-			}
-
-			// Remove Mapa
-			if(_mapa){
-				this.removeChild(_mapa);
+				pacman.visible = false;
 			}
 
 			// Play gameover animation
 			var gameOverGraphic:MovieClip = new gameOverClip();
 			this.addChild(gameOverGraphic);
-			// place in topcenter
-			gameOverGraphic.x = stage.width/2 - gameOverGraphic.width/2;
+			// Place in topcenter
+			gameOverGraphic.x = (stage.stageWidth/2) - (gameOverGraphic.width/2);
 			gameOverGraphic.y = -gameOverGraphic.height;
 
-			var tween:GTween = new GTween(gameOverGraphic,20,null,{ease:Sine.easeInOut});
-			tween.data = {y:(stage.height/2 - gameOverGraphic.height/2)};
+			// Tween gameover
+			var tween:GTween = new GTween(gameOverGraphic,3.5,{y:(stage.stageHeight/2)-(gameOverGraphic.height/2)},{ease:Elastic.easeOut,
+				onComplete: function(){
+					// Add replay button
+					var replayButton = new replayBT();
+					replayButton.x = (stage.stageWidth/2) - (replayButton.width/2);
+					replayButton.y = (stage.stageHeight/2) + (gameOverGraphic.height/2) + 30;
+					addChild(replayButton);
+					replayButton.addEventListener(MouseEvent.CLICK, restartGame);
+				}});
 
+			// Blur tween for _mapa
+			var blur:BlurFilter = new BlurFilter(0, 0, 2);
+			_mapa.filters = new Array(blur);
+			var tween2:GTween = new GTween(_mapa,1,{blur:25},{ease:Sine.easeIn});
+
+			// Tween for score
+			scoreboard.showMeTheScore(new Point(
+					(stage.stageWidth/2),
+					(stage.stageHeight/2) + (gameOverGraphic.height/2)
+					));
+		}
+
+		public function restartGame(e:Event){
+			trace("RESTARTING GAME...");
 		}
 
 		// Detects key press

@@ -115,7 +115,7 @@ package contingutsMultimedia{
 			// Reset timer
 			_timer.stop();
 			_timer = null;
-			this.updateTimers(null);
+			//this.updateTimers(null);
 		}
 
 		// Act ghost
