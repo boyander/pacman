@@ -14,13 +14,10 @@ package contingutsMultimedia {
 	import flash.display.MovieClip;
 	import contingutsMultimedia.Mapa;
 	import contingutsMultimedia.Item;
-
+	import contingutsMultimedia.Constants;
 
 	// Pacman player :-)
 	public class Pacman extends Actor {
-
-		// Constants
-		public static const STARTSPEED:Number = 5;
 
 		// Pushed direction
 		public var pushedDirection:Point;
@@ -35,7 +32,7 @@ package contingutsMultimedia {
       		pacmanClip = new definedImplementation();
       		var startDirection:Point = Constants.RIGHT;
       		pushedDirection = startDirection;
-			super(pacmanClip, STARTSPEED, startDirection, startPosition);
+			super(pacmanClip, Constants.PACMAN_SPEED, startDirection, startPosition);
 			pacmanMoveHead(startDirection);
 		}
 
@@ -86,9 +83,10 @@ package contingutsMultimedia {
 			if(pushedDirection != null){
 				var p:Point = new Point(_position.x + pushedDirection.x, _position.y + pushedDirection.y);
 				if(canMoveThru(p)){
-					this.setMoveDirection(pushedDirection);
-					pacmanMoveHead(pushedDirection);
-					pushedDirection = null;
+					if(this.setMoveDirection(pushedDirection)){
+						pacmanMoveHead(pushedDirection);
+						pushedDirection = null;	
+					}
 				}
 			}
 		}

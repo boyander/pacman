@@ -156,8 +156,9 @@ package contingutsMultimedia {
 				paused = true;
 				pacman.diePacman();
 				removeGhosts();
+				scoreboard.removeLive();
 				pacman.addEventListener("pacmanDies", function(e:Event){
-					if(scoreboard.removeLive()){
+					if(scoreboard.hasLives()){
 						resetGame();
 					}else{
 						gameOver();
@@ -193,7 +194,8 @@ package contingutsMultimedia {
 			gameOverGraphic.y = -gameOverGraphic.height;
 
 			// Tween gameover
-			var tween:GTween = new GTween(gameOverGraphic,3.5,{y:(stage.stageHeight/2)-(gameOverGraphic.height/2)},{ease:Elastic.easeOut,
+			var tween:GTween = new GTween(gameOverGraphic,3.5,{y:(stage.stageHeight/2)-(gameOverGraphic.height/2)},
+				{ease:Elastic.easeOut,
 				onComplete: function(){
 					// Add replay button
 					var replayButton = new replayBT();
@@ -201,7 +203,8 @@ package contingutsMultimedia {
 					replayButton.y = (stage.stageHeight/2) + (gameOverGraphic.height/2) + 30;
 					addChild(replayButton);
 					replayButton.addEventListener(MouseEvent.CLICK, restartGame);
-				}});
+				}
+			});
 
 			// Blur tween for _mapa
 			var blur:BlurFilter = new BlurFilter(0, 0, 2);
@@ -210,9 +213,9 @@ package contingutsMultimedia {
 
 			// Tween for score
 			scoreboard.showMeTheScore(new Point(
-					(stage.stageWidth/2),
-					(stage.stageHeight/2) + (gameOverGraphic.height/2)
-					));
+				(stage.stageWidth/2),
+				(stage.stageHeight/2) + (gameOverGraphic.height/2)
+			));
 		}
 
 		public function restartGame(e:Event){

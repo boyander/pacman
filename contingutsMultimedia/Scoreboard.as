@@ -10,6 +10,7 @@ package contingutsMultimedia {
 	import flash.geom.Point;
 	import contingutsMultimedia.Constants;
 	import flash.text.TextField;
+	import flash.text.TextFieldAutoSize;
 	import flash.text.TextFormat;
 	import flash.events.Event;
 	import com.gskinner.motion.GTween;
@@ -34,13 +35,14 @@ package contingutsMultimedia {
 			// Setup score
 			score = 0;
 			scoreText = new TextField();
-			scoreText.name = "title";
 			scoreText.mouseEnabled = false;
+			scoreText.autoSize=TextFieldAutoSize.LEFT;
 
 			// Score text format
 			var myformat:TextFormat = new TextFormat();
 			myformat.color = 0xFFFFFF;
-			myformat.size = 20;
+			myformat.size = 30;
+			myformat.font = new ScoreFont().fontName;
 			scoreText.defaultTextFormat = myformat;
 
 			// Add to clip
@@ -74,18 +76,26 @@ package contingutsMultimedia {
 		public function showMeTheScore(p:Point){
 			var tween:GTween = new GTween(this.scoreText,3,
 				{x:p.x - this.scoreText.width/2,y:p.y},
-				{ease:Sine.easeIn}
+				{ease:Elastic.easeOut}
 			);
+		}
 
+		public function hasLives(){
+			return (lives > 0);
 		}
 
 		public function removeLive(){
 			var liv = livesArray.pop();
 			if(liv != null){
-				this.removeChild(liv);
+				var tween:GTween = new GTween(liv,0.4,
+						{alpha:0.0},
+						{ease:Sine.easeOut,
+						onComplete:function(){
+							removeChild(liv);
+						}}
+					);
+				lives--;
 			}
-			lives--;
-			return (lives > 0);
 		}
 	}
 }

@@ -51,6 +51,11 @@ package contingutsMultimedia{
 		public static const GRAFIC_CLYDE:String = "fantasmica_naranja";
 		public static const GRAFIC_FEAR:String = "fantasmica_malo";
 
+		public static const PACMAN_SPEED:Number = 5;
+		public static const GHOST_SPEED:Number = 3.5;
+
+
+
 		// Constant to function to return defined implementation
 		public static function graficImplementation(fantasma:String){
 			switch (fantasma){

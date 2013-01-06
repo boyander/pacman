@@ -24,9 +24,6 @@ package contingutsMultimedia{
 	// Ghost player :-)
 	public class Ghost extends Actor {
 
-		// Constants
-		public static const GHOSTSPEED:Number = 3;
-
 		// Variables
 		private var _status:String;
 		private var _lastPosition:Point;
@@ -75,7 +72,7 @@ package contingutsMultimedia{
 			var definedImplementation:Class = getDefinitionByName(ghostGraphicsClip) as Class;
       		_ghostNormalGraphic = new definedImplementation();
 
-			super(_ghostNormalGraphic, GHOSTSPEED, Constants.RIGHT, startPosition);
+			super(_ghostNormalGraphic, Constants.GHOST_SPEED, Constants.RIGHT, startPosition);
 		}
 
 		public function initializeGhosts(){
@@ -107,7 +104,7 @@ package contingutsMultimedia{
 			setGraphicsImplement(_ghostNormalGraphic);
 
 			// Reset speed
-			setSpeed(GHOSTSPEED);
+			setSpeed(Constants.GHOST_SPEED);
 
 			// Reset positioning
 			this.resetActor();
@@ -129,20 +126,20 @@ package contingutsMultimedia{
 					debugGhost("Pacman eats");
 					_status = Constants.GO_INSIDE_JAIL;
 
-					this.setSpeed(GHOSTSPEED * 2);
+					this.setSpeed(Constants.GHOST_SPEED * 2);
 				}else if(_status == Constants.FIGHT || _status == Constants.NORMAL){
 					dispatchEvent(new Event("killPacman"));
 				}
 			}
+
+			// Update actor
+			this.actorUpdate();
 
 			// Checks jail timer and releases ghost
 			this.checkJail();
 
 			// Updates ghost behaviour depending on state
 			this.updateGhostBehaviour();
-
-			// Update actor
-			this.actorUpdate();
 		}
 
 		override public function getNextMoveDirection(){
@@ -327,7 +324,7 @@ package contingutsMultimedia{
 				_jailTimer = new Timer(Constants.JAIL_TIME, 1);
 				_jailTimer.addEventListener("timer", function(){
 					_status = Constants.NORMAL;
-					setSpeed(GHOSTSPEED);
+					setSpeed(Constants.GHOST_SPEED);
 					debugGhost("Bye Jail!");
 				});
 				_jailTimer.start();
