@@ -45,9 +45,23 @@ package contingutsMultimedia {
 			myformat.font = new ScoreFont().fontName;
 			scoreText.defaultTextFormat = myformat;
 
+			// Reset Scoreboard
+			this.reset();
+
 			// Add to clip
 			this.addChild(scoreText);
+		}
 
+		public function reset(){
+			// Reset data
+			score = 0;
+			lives = Constants.GAMESTARTLIVES;
+			// Reset score & score positioning
+			scoreText.text = "Score: " + String(score);
+			scoreText.x = 0;
+			scoreText.y = 0;
+
+			// Reset lives
 			livesArray = new Array();
 			var offset:Point = new Point(480,0);
 			for(var i:uint = 0; i < Constants.GAMESTARTLIVES; i++){
@@ -58,14 +72,6 @@ package contingutsMultimedia {
 				livesArray.push(liv);
 				this.addChild(liv);
 			}
-		}
-
-		public function reset(){
-			// Reset data
-			score = 0;
-			lives = Constants.GAMESTARTLIVES;
-			// Reset displays
-			scoreText.text = "Score: " + String(score);
 		}
 
 		public function addScore(s:Number){

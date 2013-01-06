@@ -64,7 +64,7 @@ package contingutsMultimedia {
 		}
 
 		// Parse from txt file to array
-		private function parseaMapa(e:Event):void
+		public function parseaMapa(e:Event):void
 		{
 			var rawMap:String = URLLoader(e.target).data;
 			var tile;

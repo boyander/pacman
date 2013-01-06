@@ -51,9 +51,15 @@ package contingutsMultimedia{
 		public static const GRAFIC_CLYDE:String = "fantasmica_naranja";
 		public static const GRAFIC_FEAR:String = "fantasmica_malo";
 
+		// Speeds for player and ghosts
 		public static const PACMAN_SPEED:Number = 5;
 		public static const GHOST_SPEED:Number = 3.5;
 
+		// Events
+		public static const EVENT_EATPOWERUP:String = "evt_eatpowerup";
+		public static const EVENT_EATPAC:String = "evt_eatpac";
+		public static const EVENT_EATGHOST:String = "evt_eatghost";
+		public static const EVENT_GAMEOVER:String = "evt_gameover";
 
 
 		// Constant to function to return defined implementation

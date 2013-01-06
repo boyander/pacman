@@ -13,15 +13,12 @@ package contingutsMultimedia {
 	import contingutsMultimedia.Mapa;
 	import contingutsMultimedia.Constants;
 	import contingutsMultimedia.Scoreboard;
+	import contingutsMultimedia.Soundboard;
 	import flash.events.Event;
 	import flash.events.KeyboardEvent;
 	import flash.events.MouseEvent;
 	import flash.ui.Keyboard;
 	import flash.filters.BlurFilter;
-
-
-	import flash.media.Sound;
-	import flash.net.URLRequest;
 
 	import com.gskinner.motion.GTween;
 	import com.gskinner.motion.easing.*;
@@ -43,10 +40,15 @@ package contingutsMultimedia {
 		var startPositionPacman:Point;
 
 		// Sound objects
-		var soundFX:Sound;
+		var soundboard:Soundboard;
 
 		// Scoreboard
 		public var scoreboard:Scoreboard;
+
+		// Graphics
+		var gameOverGraphic:MovieClip;
+		var replayButton:MovieClip;
+
 
 		public function Game(gameMap:String){
 
@@ -74,14 +76,10 @@ package contingutsMultimedia {
 			scoreboard = new Scoreboard();
 			this.addChild(scoreboard);
 
-			// Load chili sound
-			soundFX = new Sound();
-			soundFX.load(new URLRequest("audios/chili.mp3"));
+			// Soundboard
+			soundboard = new Soundboard();
+			soundboard.loadSounds();
 
-			// Background sound
-			var soundBG:Sound = new Sound();
-			soundBG.load(new URLRequest("audios/bg_theme.mp3"));
-			//soundBG.play();
 		}
 
 		public function resetGame(){
@@ -144,7 +142,7 @@ package contingutsMultimedia {
 			}else if (e.type == "eatPowerUp"){
 				scoreboard.addScore(50);
 				trace("PowerUp!");
-				soundFX.play();
+				soundboard.playSound(Constants.EVENT_EATPOWERUP);
 				for(var i:uint; i < ghosts.length; i++){
 					ghosts[i].setFear();
 				}
@@ -181,13 +179,16 @@ package contingutsMultimedia {
 		public function gameOver(){
 			trace("GAME OVER");
 
+			// Game over sound
+			soundboard.playSound(Constants.EVENT_GAMEOVER);
+
 			// Invisible pacman
 			if(pacman){
 				pacman.visible = false;
 			}
 
 			// Play gameover animation
-			var gameOverGraphic:MovieClip = new gameOverClip();
+			gameOverGraphic = new gameOverClip();
 			this.addChild(gameOverGraphic);
 			// Place in topcenter
 			gameOverGraphic.x = (stage.stageWidth/2) - (gameOverGraphic.width/2);
@@ -198,7 +199,7 @@ package contingutsMultimedia {
 				{ease:Elastic.easeOut,
 				onComplete: function(){
 					// Add replay button
-					var replayButton = new replayBT();
+					replayButton = new replayBT();
 					replayButton.x = (stage.stageWidth/2) - (replayButton.width/2);
 					replayButton.y = (stage.stageHeight/2) + (gameOverGraphic.height/2) + 30;
 					addChild(replayButton);
@@ -220,6 +221,16 @@ package contingutsMultimedia {
 
 		public function restartGame(e:Event){
 			trace("RESTARTING GAME...");
+
+			// Remove filters;
+			_mapa.filters = new Array();
+
+			// Remove gameover
+			removeChild(gameOverGraphic);
+			removeChild(replayButton);
+
+			resetGame();
+			scoreboard.reset();
 		}
 
 		// Detects key press
