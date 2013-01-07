@@ -28,7 +28,12 @@ package contingutsMultimedia {
 
 		// Graphics array
 		public var mapArray:Array;
+		public var gameArray:Array;
 		public var graphicsMap:MovieClip;
+
+		// Eat items
+		public var avaliableItems:Number;
+		public var eatedItems:Number;
 
 		// Cache arrays
 		public var _validPosCache:Array;
@@ -41,8 +46,11 @@ package contingutsMultimedia {
 			// Set map offset
 			_mapOffset = offset;
 
-			// Global map array
+			// Global map array with level
 			mapArray = new Array();
+			gameArray = new Array();
+			avaliableItems = 0;
+			eatedItems = 0;
 
 			// Cache arrays
 			_validPosCache = new Array();
@@ -90,10 +98,12 @@ package contingutsMultimedia {
 						break;
 						case "*":
 							mapArray[row][column] = new Item(Constants.POWERUP);
+							avaliableItems++;
 							_validPosCache.push([column,row]);
 						break;
 						case ".":
 							mapArray[row][column] = new Item(Constants.PAC);
+							avaliableItems++;
 							_validPosCache.push([column,row]);
 						break;
 						case "o":
@@ -110,7 +120,7 @@ package contingutsMultimedia {
 					column++;
 				}
 			}
-			this.drawMap();
+			this.resetMap();
 			dispatchEvent(new Event("mapaLoaded"));
 		}
 
@@ -150,18 +160,29 @@ package contingutsMultimedia {
 		}
 
 		// Assign positons to map objects
-		public function drawMap(){
+		public function resetMap(){
 			var mapW:uint = mapArray.length;
 			var mapH:uint = mapArray[0].length;
-			for (var i:uint = 0; i < mapW; i++)
+
+			// Remove all childs
+			while(graphicsMap.numChildren != 0) graphicsMap.removeChildAt(0);
+			trace("There are " + avaliableItems +" avaliable items.");
+			eatedItems = avaliableItems;
+			gameArray = new Array();
+
+			// Draw items and walls
+			var i:uint;
+			var j:uint;
+			for ( i = 0; i < mapW; i++)
 			{
-				for (var j:uint = 0; j < mapH; j++)
+				gameArray[i] = new Array();
+				for ( j = 0; j < mapH; j++)
 				{
-					// Draw items
-					if(mapArray[i][j] != null){
-						mapArray[i][j].x = (_tileSize * j) + _mapOffset.x;
-						mapArray[i][j].y = (_tileSize * i) + _mapOffset.y;
-						graphicsMap.addChild(mapArray[i][j]);
+					gameArray[i][j] = mapArray[i][j];
+					if(gameArray[i][j] != null){
+						gameArray[i][j].x = (_tileSize * j) + _mapOffset.x;
+						gameArray[i][j].y = (_tileSize * i) + _mapOffset.y;
+						graphicsMap.addChild(gameArray[i][j]);
 					}
 				}
 			}
@@ -186,8 +207,8 @@ package contingutsMultimedia {
 		}
 
 		public function eatItemAt(p:Point){
-			if(mapArray[p.y][p.x].getType() != Constants.NEUTRAL){
-				switch(mapArray[p.y][p.x].getType()){
+			if(gameArray[p.y][p.x].getType() != Constants.NEUTRAL){
+				switch(gameArray[p.y][p.x].getType()){
 					case Constants.PAC:
 						dispatchEvent(new Event("eatPac"));
 					break;
@@ -195,8 +216,12 @@ package contingutsMultimedia {
 						dispatchEvent(new Event("eatPowerUp"));
 					break;
 				}
-				graphicsMap.removeChild(mapArray[p.y][p.x]);
-				mapArray[p.y][p.x] = new Item(Constants.NEUTRAL);
+				graphicsMap.removeChild(gameArray[p.y][p.x]);
+				gameArray[p.y][p.x] = new Item(Constants.NEUTRAL);
+				eatedItems--;
+				if(eatedItems <= 0){
+					dispatchEvent(new Event("pacmanWins"));
+				}
 			}
 		}
 

@@ -71,6 +71,10 @@ package contingutsMultimedia {
 			}
 		}
 
+		public function getMoveDirection(){
+			return _moveDirection;
+		}
+
 		public function setGraphicsImplement(graphicsClip){
 			this.removeChild(_graphicsImplement);
 			_graphicsImplement = graphicsClip;

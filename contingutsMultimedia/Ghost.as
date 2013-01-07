@@ -42,6 +42,8 @@ package contingutsMultimedia{
 		// Timer for jail
 		private var _jailTimer:Timer;
 
+		public var _tryReverse:Boolean;
+
 		// Pacman clip
 		private var _pacman:Actor;
 
@@ -63,6 +65,7 @@ package contingutsMultimedia{
 
 			this.initializeGhosts();
 
+			_tryReverse = false;
 			// Start timer for ghosts
 			this.updateTimers(null);
 
@@ -118,19 +121,6 @@ package contingutsMultimedia{
 		// Act ghost
 		public function actuate(){
 			
-			// Check collision with pacman and dispatches events on collision
-			if(_position.equals(_pacman._position)){
-				trace(_status);
-				if(_status == Constants.GHOST_FEAR){
-					dispatchEvent(new Event("eatGhost"));
-					debugGhost("Pacman eats");
-					_status = Constants.GO_INSIDE_JAIL;
-
-					this.setSpeed(Constants.GHOST_SPEED * 2);
-				}else if(_status == Constants.FIGHT || _status == Constants.NORMAL){
-					dispatchEvent(new Event("killPacman"));
-				}
-			}
 
 			// Update actor
 			this.actorUpdate();
@@ -140,6 +130,20 @@ package contingutsMultimedia{
 
 			// Updates ghost behaviour depending on state
 			this.updateGhostBehaviour();
+		}
+
+		public function checkGameCollisions(){
+			// Check collision with pacman and dispatches events on collision
+			if(_position.equals(_pacman._position)){
+				if(_status == Constants.GHOST_FEAR){
+					dispatchEvent(new Event("eatGhost"));
+					debugGhost("Pacman eats");
+					_status = Constants.GO_INSIDE_JAIL;
+					this.setSpeed(Constants.GHOST_SPEED * 2);
+				}else if(_status == Constants.FIGHT || _status == Constants.NORMAL){
+					dispatchEvent(new Event("killPacman"));
+				}
+			}
 		}
 
 		override public function getNextMoveDirection(){
@@ -186,7 +190,12 @@ package contingutsMultimedia{
 
 		public function setupPathTo(p:Point, ignoreNew:Boolean=false){
 			if(needNewPath() || ignoreNew){
-				_path = _star.findPath(this.getPosition(), p);
+				if(_tryReverse){
+					_path = _star.findPath(this.getPosition(), p, _tryReverse);
+					_tryReverse = false;
+				}else{
+					_path = _star.findPath(this.getPosition(), p);
+				}
 				_pathStep = 1;
 			}
 		}
@@ -349,6 +358,7 @@ package contingutsMultimedia{
 					if(_status == Constants.GHOST_FEAR){
 						_status = Constants.NORMAL;
 						debugGhost("Fear off :-( ");
+						_tryReverse = true;
 						_timer.start();
 					}
 				});

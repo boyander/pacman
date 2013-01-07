@@ -71,6 +71,7 @@ package contingutsMultimedia {
 			// Reset data
 			score = 0;
 			lives = Constants.GAMESTARTLIVES;
+			level = 1;
 			// Reset score & score positioning
 			scoreText.text = "Score: " + String(score);
 			scoreText.x = 0;
@@ -105,7 +106,7 @@ package contingutsMultimedia {
 
 		public function addLevel(){
 			level += 1;
-			scoreText.text = "Level: " + String(level);
+			levelText.text = "Level: " + String(level);
 		}
 
 		public function showMeTheScore(p:Point){

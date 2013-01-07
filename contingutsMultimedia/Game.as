@@ -67,6 +67,7 @@ package contingutsMultimedia {
 			_mapa = new Mapa(gameMap, _offset);
 			_mapa.addEventListener("eatPac", eventProcessor);
 			_mapa.addEventListener("eatPowerUp", eventProcessor);
+			_mapa.addEventListener("pacmanWins", eventProcessor);
 			_mapa.addEventListener("mapaLoaded", function(e:Event){
 				// When map loaded reset game and spawn characters
 				resetGame();
@@ -132,8 +133,13 @@ package contingutsMultimedia {
 		// Updates all objects of game
 		public function frameUpdate(e:Event){
 			if(!paused){
+				// Check ghosts collisions with pacman
+				var i:uint;
+				for(i=0; i < ghosts.length; i++){
+					ghosts[i].checkGameCollisions();
+				}
 				// Update ghosts
-				for(var i:uint; i < ghosts.length; i++){
+				for(i=0; i < ghosts.length; i++){
 					ghosts[i].actuate();
 				}
 				// Update pacman
@@ -173,6 +179,10 @@ package contingutsMultimedia {
 						gameOver();
 					}					
 				});
+			}else if(e.type == "pacmanWins"){
+				scoreboard.addLevel();
+				resetGame();
+				_mapa.resetMap();
 			}
 		}
 
@@ -242,6 +252,7 @@ package contingutsMultimedia {
 
 			resetGame();
 			scoreboard.reset();
+			_mapa.resetMap();
 		}
 
 		public function toggleMute(e:Event){
