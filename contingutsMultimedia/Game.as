@@ -32,6 +32,7 @@ package contingutsMultimedia {
 		public var ghosts:Array;
 		public var names:Array = [Constants.BLINKY, Constants.INKY, Constants.PINKY, Constants.CLYDE];
 		public var paused:Boolean;
+		public var _muted:Boolean;
 
 		// DEBUG: Path checker 
 		private var pchecker:MovieClip = new MovieClip();
@@ -75,6 +76,13 @@ package contingutsMultimedia {
 			// Setup scoreboard (counts lives and scores)
 			scoreboard = new Scoreboard();
 			this.addChild(scoreboard);
+			scoreboard.addEventListener("toggleMute", toggleMute);
+			scoreboard.addEventListener(Event.ADDED_TO_STAGE, function(){
+				scoreboard.reset(); // Reset Scoreboard
+			});
+
+			// Unmute on start
+			_muted = false;
 
 			// Soundboard
 			soundboard = new Soundboard();
@@ -88,6 +96,7 @@ package contingutsMultimedia {
 
 			// Unpause game
 			paused = false;
+
 			
 			// Pacman start position
 			startPositionPacman = new Point(13,23);
@@ -139,6 +148,7 @@ package contingutsMultimedia {
 		public function eventProcessor(e:Event){
 			if(e.type == "eatPac"){
 				scoreboard.addScore(10);
+				soundboard.playSound(Constants.EVENT_EATPAC);
 			}else if (e.type == "eatPowerUp"){
 				scoreboard.addScore(50);
 				trace("PowerUp!");
@@ -151,6 +161,7 @@ package contingutsMultimedia {
 				scoreboard.addScore(200);
 			}else if (e.type == "killPacman"){
 				trace("Ohh, sorry pacman!");
+				soundboard.playSound(Constants.EVENT_PACMANDIES);
 				paused = true;
 				pacman.diePacman();
 				removeGhosts();
@@ -201,7 +212,7 @@ package contingutsMultimedia {
 					// Add replay button
 					replayButton = new replayBT();
 					replayButton.x = (stage.stageWidth/2) - (replayButton.width/2);
-					replayButton.y = (stage.stageHeight/2) + (gameOverGraphic.height/2) + 30;
+					replayButton.y = (stage.stageHeight/2) + (gameOverGraphic.height/2) + 60;
 					addChild(replayButton);
 					replayButton.addEventListener(MouseEvent.CLICK, restartGame);
 				}
@@ -231,6 +242,18 @@ package contingutsMultimedia {
 
 			resetGame();
 			scoreboard.reset();
+		}
+
+		public function toggleMute(e:Event){
+			if(_muted){
+				_muted = false;
+				scoreboard.setMuteBt(false);
+				soundboard.setMute(false);
+			}else{
+				_muted = true;
+				scoreboard.setMuteBt(true);
+				soundboard.setMute(true);
+			}
 		}
 
 		// Detects key press

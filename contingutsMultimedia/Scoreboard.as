@@ -13,6 +13,7 @@ package contingutsMultimedia {
 	import flash.text.TextFieldAutoSize;
 	import flash.text.TextFormat;
 	import flash.events.Event;
+	import flash.events.MouseEvent;
 	import com.gskinner.motion.GTween;
 	import com.gskinner.motion.easing.*;
 
@@ -25,7 +26,9 @@ package contingutsMultimedia {
 
 		// Displays
 		public var scoreText:TextField;
+		public var levelText:TextField;
 		public var livesArray:Array;
+		public var speakerButton:MovieClip;
 
 
 		public function Scoreboard(){
@@ -36,20 +39,32 @@ package contingutsMultimedia {
 			score = 0;
 			scoreText = new TextField();
 			scoreText.mouseEnabled = false;
-			scoreText.autoSize=TextFieldAutoSize.LEFT;
+			scoreText.autoSize = TextFieldAutoSize.LEFT;
 
-			// Score text format
+			// Setup level
+			level = 1;
+			levelText = new TextField();
+			levelText.mouseEnabled = false;
+			levelText.autoSize = TextFieldAutoSize.LEFT;
+
+			// Score & Level text format
 			var myformat:TextFormat = new TextFormat();
 			myformat.color = 0xFFFFFF;
 			myformat.size = 30;
 			myformat.font = new ScoreFont().fontName;
 			scoreText.defaultTextFormat = myformat;
+			levelText.defaultTextFormat = myformat;
 
-			// Reset Scoreboard
-			this.reset();
+			// Speaker button
+			speakerButton = new muteClip();
+			speakerButton.addEventListener(MouseEvent.CLICK, function(){
+				dispatchEvent(new Event("toggleMute"));
+			});
 
 			// Add to clip
 			this.addChild(scoreText);
+			this.addChild(levelText);
+			this.addChild(speakerButton);
 		}
 
 		public function reset(){
@@ -61,17 +76,26 @@ package contingutsMultimedia {
 			scoreText.x = 0;
 			scoreText.y = 0;
 
+			// Reset level field
+			levelText.text = "Level: " + String(level);
+			levelText.x = 200;
+			levelText.y = 0;
+
 			// Reset lives
 			livesArray = new Array();
-			var offset:Point = new Point(480,0);
+			var offset:Point = new Point(stage.stageWidth,0);
 			for(var i:uint = 0; i < Constants.GAMESTARTLIVES; i++){
 				var liv = new PacmanClip();
 				liv.gotoAndStop(4);
-				liv.x = offset.x + (25*i);
+				liv.x = offset.x - (25*i) - liv.width;
 				liv.y = offset.y;
 				livesArray.push(liv);
 				this.addChild(liv);
 			}
+
+			// Speaker button
+			speakerButton.x = offset.x - (25*Constants.GAMESTARTLIVES)- speakerButton.width - 20;
+			speakerButton.scale = 0.5;
 		}
 
 		public function addScore(s:Number){
@@ -79,11 +103,28 @@ package contingutsMultimedia {
 			scoreText.text = "Score: " + String(score);
 		}
 
+		public function addLevel(){
+			level += 1;
+			scoreText.text = "Level: " + String(level);
+		}
+
 		public function showMeTheScore(p:Point){
 			var tween:GTween = new GTween(this.scoreText,3,
 				{x:p.x - this.scoreText.width/2,y:p.y},
-				{ease:Elastic.easeOut}
+				{ease:Sine.easeIn}
 			);
+			var tween2:GTween = new GTween(this.levelText,3,
+				{x:p.x - (this.levelText.width/2) ,y:(p.y + this.scoreText.height)},
+				{ease:Sine.easeIn}
+			);
+		}
+
+		public function setMuteBt(b:Boolean){
+			if(b){
+				speakerButton.gotoAndStop(2);
+			}else{
+				speakerButton.gotoAndStop(1);
+			}
 		}
 
 		public function hasLives(){

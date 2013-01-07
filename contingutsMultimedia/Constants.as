@@ -59,6 +59,7 @@ package contingutsMultimedia{
 		public static const EVENT_EATPOWERUP:String = "evt_eatpowerup";
 		public static const EVENT_EATPAC:String = "evt_eatpac";
 		public static const EVENT_EATGHOST:String = "evt_eatghost";
+		public static const EVENT_PACMANDIES:String = "evt_pacmandies";
 		public static const EVENT_GAMEOVER:String = "evt_gameover";
 
 
