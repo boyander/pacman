@@ -75,6 +75,13 @@ package contingutsMultimedia{
 			var definedImplementation:Class = getDefinitionByName(ghostGraphicsClip) as Class;
       		_ghostNormalGraphic = new definedImplementation();
 
+      		// Scaled ghosts
+      		var scale:Number =  map.getTileSize() * 1.2 / _ghostNormalGraphic.width;
+      		_ghostNormalGraphic.scaleX = _ghostNormalGraphic.scaleY = scale;
+      		_ghostFearGraphic.scaleX = _ghostFearGraphic.scaleY = scale;
+      		_ghostEyesGraphic.scaleX = _ghostEyesGraphic.scaleY = scale;
+
+
 			super(_ghostNormalGraphic, Constants.GHOST_SPEED, Constants.RIGHT, startPosition);
 		}
 
@@ -178,13 +185,13 @@ package contingutsMultimedia{
 		// Moves Ghost eyes to current moving direction
 		public function moveEyes(moveDirection){
 			if(moveDirection.equals(Constants.UP)){
-				_graphicsImplement.ojos.gotoAndStop(3);
-			}else if(moveDirection.equals(Constants.DOWN)){
-				_graphicsImplement.ojos.gotoAndStop(4);
-			}else if(moveDirection.equals(Constants.LEFT)){
-				_graphicsImplement.ojos.gotoAndStop(1);
-			}else{
 				_graphicsImplement.ojos.gotoAndStop(2);
+			}else if(moveDirection.equals(Constants.DOWN)){
+				_graphicsImplement.ojos.gotoAndStop(1);
+			}else if(moveDirection.equals(Constants.LEFT)){
+				_graphicsImplement.ojos.gotoAndStop(3);
+			}else{
+				_graphicsImplement.ojos.gotoAndStop(4);
 			}
 		}
 

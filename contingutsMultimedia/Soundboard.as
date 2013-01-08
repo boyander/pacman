@@ -36,6 +36,7 @@ package contingutsMultimedia {
 
 		public function playSound(e:String){
 			channel = soundFX[e].play();
+			// After start playing scale to current volume and mute if necessary
 			channel.soundTransform = volumeAdjust;
 		}
 
@@ -47,6 +48,8 @@ package contingutsMultimedia {
 				trace("Un-mute audio")
 				volumeAdjust.volume = 1.0;
 			}
+			// Set volume adjust in case play were started early
+			channel.soundTransform = volumeAdjust;
 		}
 
 		public function loadSounds(){
@@ -55,7 +58,7 @@ package contingutsMultimedia {
 			this.addSound(Constants.EVENT_EATPAC,"audios/eat_pac.mp3");
 			this.addSound(Constants.EVENT_PACMANDIES,"audios/pacman_dies.mp3");
 
-			this.addSound('BGS',"audios/bg_theme.mp3");
+			//this.addSound('BGS',"audios/bg_theme.mp3");
 		}
 
 	}

@@ -30,6 +30,10 @@ package contingutsMultimedia {
 			map = m;
 			var definedImplementation:Class = getDefinitionByName(pacmanGraphicsClip) as Class;
       		pacmanClip = new definedImplementation();
+      		// Scaled pacman
+      		var scale:Number =  map.getTileSize() * 1.3 / pacmanClip.width;
+      		pacmanClip.scaleX = pacmanClip.scaleY = scale;
+
       		var startDirection:Point = Constants.RIGHT;
       		pushedDirection = startDirection;
 			super(pacmanClip, Constants.PACMAN_SPEED, startDirection, startPosition);
