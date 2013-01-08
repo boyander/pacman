@@ -41,6 +41,7 @@ package contingutsMultimedia{
 		private var _fearTimer:Timer;
 		// Timer for jail
 		private var _jailTimer:Timer;
+		private var _inJail:Boolean;
 
 		public var _tryReverse:Boolean;
 
@@ -64,6 +65,7 @@ package contingutsMultimedia{
 			_pathcheck = pathcheck;
 
 			this.initializeGhosts();
+			_inJail = false;
 
 			_tryReverse = false;
 			// Start timer for ghosts
@@ -113,9 +115,6 @@ package contingutsMultimedia{
 			// Normal ghost
 			setGraphicsImplement(_ghostNormalGraphic);
 
-			// Reset speed
-			setSpeed(Constants.GHOST_SPEED);
-
 			// Reset positioning
 			this.resetActor();
 
@@ -146,7 +145,6 @@ package contingutsMultimedia{
 					dispatchEvent(new Event("eatGhost"));
 					debugGhost("Pacman eats");
 					_status = Constants.GO_INSIDE_JAIL;
-					this.setSpeed(Constants.GHOST_SPEED * 2);
 				}else if(_status == Constants.FIGHT || _status == Constants.NORMAL){
 					dispatchEvent(new Event("killPacman"));
 				}
@@ -212,10 +210,12 @@ package contingutsMultimedia{
 
 			switch(_status){
 				case Constants.NORMAL:
+					setSpeed(Constants.GHOST_SPEED);
 					this.setupPathTo(map.getRandomPoint());
 					setGraphicsImplement(_ghostNormalGraphic);
 					break;
 				case Constants.GHOST_FEAR:
+					setSpeed(Constants.GHOST_SPEED);
 					this.setupPathTo(map.getRandomPoint());
 					setGraphicsImplement(_ghostFearGraphic);
 					break;
@@ -223,6 +223,7 @@ package contingutsMultimedia{
 					this.setupPathTo(_pacman.getPosition(),true);
 					break;
 				case Constants.GO_INSIDE_JAIL:
+					this.setSpeed(Constants.GHOST_SPEED * 2);
 					this.setupPathTo(map.getJailPosition());
 					setGraphicsImplement(_ghostEyesGraphic);
 					break;
@@ -335,15 +336,17 @@ package contingutsMultimedia{
 			//debugGhost(map.getTileAtPoint(_position.x, _position.y).getType());
 
 			// Check if ghost is currently inside the jail		
-			if(_status == Constants.GO_INSIDE_JAIL && map.getTileAtPoint(_position.x, _position.y).getType() == Constants.JAIL){
+			if(_status == Constants.GO_INSIDE_JAIL && map.getTileAtPoint(_position.x, _position.y).getType() == Constants.JAIL && !_inJail){
 				debugGhost("Jail timer starts!");
+				_inJail = true;
 				_jailTimer = new Timer(Constants.JAIL_TIME, 1);
 				_jailTimer.addEventListener("timer", function(){
 					_status = Constants.NORMAL;
-					setSpeed(Constants.GHOST_SPEED);
 					debugGhost("Bye Jail!");
 				});
 				_jailTimer.start();
+			}else if (map.getTileAtPoint(_position.x, _position.y).getType() != Constants.JAIL){
+				_inJail = false;
 			}
 		}
 

@@ -133,17 +133,18 @@ package contingutsMultimedia {
 		// Updates all objects of game
 		public function frameUpdate(e:Event){
 			if(!paused){
-				// Check ghosts collisions with pacman
-				var i:uint;
-				for(i=0; i < ghosts.length; i++){
-					ghosts[i].checkGameCollisions();
-				}
 				// Update ghosts
 				for(i=0; i < ghosts.length; i++){
 					ghosts[i].actuate();
 				}
 				// Update pacman
 				pacman.actuate();
+				
+				// Check ghosts collisions with pacman
+				var i:uint;
+				for(i=0; i < ghosts.length; i++){
+					ghosts[i].checkGameCollisions();
+				}
 
 				// Map bright animation
 				_mapa.animateSlices();
