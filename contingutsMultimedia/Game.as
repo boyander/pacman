@@ -19,6 +19,9 @@ package contingutsMultimedia {
 	import flash.events.MouseEvent;
 	import flash.ui.Keyboard;
 	import flash.filters.BlurFilter;
+	import flash.utils.Timer;
+	import flash.events.TimerEvent;
+
 
 	import com.gskinner.motion.GTween;
 	import com.gskinner.motion.easing.*;
@@ -136,18 +139,19 @@ package contingutsMultimedia {
 		// Updates all objects of game
 		public function frameUpdate(e:Event){
 			if(!paused){
+
+				// Check ghosts collisions with pacman
+				var i:uint;
+				for(i=0; i < ghosts.length; i++){
+					ghosts[i].checkGameCollisions();
+				}
+
 				// Update pacman
 				pacman.actuate();
 
 				// Update ghosts
 				for(i=0; i < ghosts.length; i++){
 					ghosts[i].actuate();
-				}
-
-				// Check ghosts collisions with pacman
-				var i:uint;
-				for(i=0; i < ghosts.length; i++){
-					ghosts[i].checkGameCollisions();
 				}
 
 				// Map bright animation
@@ -170,6 +174,13 @@ package contingutsMultimedia {
 			}else if (e.type == "eatGhost"){
 				trace("Eat ghost +200");
 				scoreboard.addScore(200);
+				paused = true;
+				soundboard.playSound(Constants.EVENT_EATGHOST);
+				var eatGH:Timer = new Timer(350,1);
+				eatGH.addEventListener(TimerEvent.TIMER, function(e:Event){
+					paused = false;
+				});
+				eatGH.start();
 			}else if (e.type == "killPacman"){
 				trace("Ohh, sorry pacman!");
 				soundboard.playSound(Constants.EVENT_PACMANDIES);

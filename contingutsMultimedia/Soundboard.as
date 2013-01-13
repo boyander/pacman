@@ -57,7 +57,7 @@ package contingutsMultimedia {
 			this.addSound(Constants.EVENT_GAMEOVER,"audios/nucelar.mp3");
 			this.addSound(Constants.EVENT_EATPAC,"audios/eat_pac.mp3");
 			this.addSound(Constants.EVENT_PACMANDIES,"audios/pacman_dies.mp3");
-
+			this.addSound(Constants.EVENT_EATGHOST,"audios/eat_pac2.mp3");
 			//this.addSound('BGS',"audios/bg_theme.mp3");
 		}
 
