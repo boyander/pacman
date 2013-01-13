@@ -53,7 +53,7 @@ package contingutsMultimedia{
 
 		// Speeds for player and ghosts
 		public static const PACMAN_SPEED:Number = 5;
-		public static const GHOST_SPEED:Number = 3.5;
+		public static const GHOST_SPEED:Number = 4;
 
 		// Events
 		public static const EVENT_EATPOWERUP:String = "evt_eatpowerup";

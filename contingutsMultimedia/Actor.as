@@ -16,12 +16,13 @@ package contingutsMultimedia {
 
 		public var _speed:Number;
 		private var _moveDirection:Point;
-		private var _pushedDirection:Point;
 		public var _deltaChange:Point;
 		public var _position:Point;
 		public var map:Mapa;
+		private var _mapSize:Point;
 		public var _graphicsImplement:MovieClip;
 		public var _startPosition:Point;
+		public var _name:String;
 
 		public var _actorOffset:Point;
 
@@ -30,8 +31,7 @@ package contingutsMultimedia {
 			_deltaChange = new Point(0,0);
 
 			_speed = speed;
-			_moveDirection = new Point(moveDir.x,moveDir.y); // MarcP, BUG#01-Create new object to not override Constants
-			_pushedDirection = new Point(moveDir.x,moveDir.y);
+			_moveDirection = new Point(0,0); // MarcP, BUG#01-Create new object to not override Constants
 			_startPosition = startPosition;
 			_position = new Point(startPosition.x,startPosition.y);
 			_graphicsImplement = graphicsClip;
@@ -39,27 +39,37 @@ package contingutsMultimedia {
 
 			// Start position pixel setup
 			var mapTileToPixel:Point = map.tileToPixel(_position.x, _position.y);
-			this.x = mapTileToPixel.x + _deltaChange.x - _actorOffset.x;
-			this.y = mapTileToPixel.y + _deltaChange.y - _actorOffset.y;
+			this.setCoordinates(mapTileToPixel.x,mapTileToPixel.y);
 
 			// Add graphics implement to clip
 			this.addChild(_graphicsImplement);
+
+			// Cache map size
+			_mapSize = map.getMapSize();
 		}
 
 		public function resetActor(){
 			_position = new Point(_startPosition.x,_startPosition.y);
 			setMoveDirection(new Point(0,0));
-			moveActor();
 		}
 
 		public function setMoveDirection(p:Point){
+
 			var checkChange:Boolean = true;
-			
+			var current:Point = this.getCoordinates();
 			// Avoid cornering, check pushed move
+			_deltaChange.x = -1 * ((_position.x * map.getTileSize())-current.x+map.getTileSize()/2);
+			_deltaChange.y = -1 * ((_position.y * map.getTileSize())-current.y+map.getTileSize()/2);
+
+			//if(_moveDirection.equals(Constants.DOWN) && dX >= 1) checkChange = false;
 			if(_moveDirection.equals(Constants.LEFT) && _deltaChange.x > 0) checkChange = false;
 			if(_moveDirection.equals(Constants.RIGHT) && _deltaChange.x < 0) checkChange = false;
 			if(_moveDirection.equals(Constants.UP) && _deltaChange.y > 0) checkChange = false;
 			if(_moveDirection.equals(Constants.DOWN) && _deltaChange.y < 0) checkChange = false;
+
+			if(!p.equals(_moveDirection) && checkChange){
+				this.setCoordinates(_position.x,_position.y);
+			}
 
 			// Change moveDirection an return true if suceeded
 			if(checkChange){
@@ -81,30 +91,6 @@ package contingutsMultimedia {
 			this.addChild(_graphicsImplement);
 		}
 
-		public function moveActor(){
-
-			// Reset deltas
-			_deltaChange.x = -1 * (map.getTileSize()/2) * _moveDirection.x;
-			_deltaChange.y = -1 * (map.getTileSize()/2) * _moveDirection.y;
-
-			/* Check if current _position overflows map, this code allows pacman to cross from
-			one side of map to another */
-			var _sizeM:Point = map.getMapSize();
-			var _currX = (_position.x + _moveDirection.x) % (_sizeM.x);
-			var _currY = (_position.y + _moveDirection.y) % (_sizeM.y);
-
-			if(  _currX < 0 ){
-			       _currX = (_sizeM.x-2) - _currX;
-			}
-			if( _currY < 0 ){
-			       _currY = (_sizeM.x-2) - _currY;
-			}
-
-			// Finally change positioning on map tiles
-			_position.x = _currX;
-			_position.y = _currY;
-		}
-
 		public function getPosition(){
 			return _position;
 		}
@@ -112,33 +98,77 @@ package contingutsMultimedia {
 		public function actorUpdate(){
 
 			this.getNextMoveDirection();
-
+			
+			var nextTilePixel:Point =  map.tileToPixel(_position.x + _moveDirection.x, _position.y + _moveDirection.y);
 			var p:Point =  new Point(_position.x + _moveDirection.x, _position.y + _moveDirection.y);
 
-			var checkChange:Boolean = true;
+			var collisionX = false;
+			var collisionY = false;
 
-			if(!this.canMoveThru(p)){
-				if(_moveDirection.equals(Constants.LEFT) && _deltaChange.x <= 0) checkChange = false;
-				if(_moveDirection.equals(Constants.RIGHT) && _deltaChange.x >= 0) checkChange = false;
-				if(_moveDirection.equals(Constants.UP) && _deltaChange.y <= 0) checkChange = false;
-				if(_moveDirection.equals(Constants.DOWN) && _deltaChange.y >= 0) checkChange = false;
+			var current:Point = this.getCoordinates();
+			
+			if(_moveDirection.x > 0){
+				if(nextTilePixel.x - current.x < map.getTileSize()){
+						collisionX = true;
+				}
+			}else{
+				if(current.x - nextTilePixel.x < map.getTileSize()){
+						collisionX = true;
+				}
+			}
+
+			if(_moveDirection.y > 0){
+				if(nextTilePixel.y - current.y < map.getTileSize()){
+						collisionY = true;
+				}
+			}else{
+				if(current.y - nextTilePixel.y < map.getTileSize()){
+						collisionY = true;
+				}
+			}
+
+			// Check overflow and update positioning in X axis
+			if(this.canMoveThru(p) && collisionX && _moveDirection.x != 0){
+				// Overflowed x direction only, makes pacman passthru corridor
+				if(  _position.x < 0 ){
+					_position.x = _mapSize.x;
+			    	setCoordinates(_position.x,_position.y);
+				}else if(_position.x > _mapSize.x-1){
+					_position.x = -1;
+					setCoordinates(_position.x,_position.y);
+				}
+
+				_position.x += _moveDirection.x;
+				this.overflowTile();
+			}
+
+			// Check overflow and update positioning in Y axis
+			if(this.canMoveThru(p) && collisionY && _moveDirection.y != 0){
+				_position.y += _moveDirection.y;
+				this.overflowTile();
 			}
 			
-			if(checkChange){
-				_deltaChange.x += _speed * _moveDirection.x;
-				_deltaChange.y += _speed * _moveDirection.y;
+			if( _name != "Pacman"){
+				this.addCoordinates((_speed * _moveDirection.x), (_speed * _moveDirection.y));
+			}else if( (!collisionY || ! collisionX)  || this.canMoveThru(p)){
+				this.addCoordinates((_speed * _moveDirection.x), (_speed * _moveDirection.y));
 			}
+		}
 
-			// Update map relative position if delta overflows
-			if(Math.abs(_deltaChange.x) >= map.getTileSize()/2 || Math.abs(_deltaChange.y) >= map.getTileSize()/2){
-				this.overflowTile();
-				moveActor();
-			}
+		private function addCoordinates(xpos:Number,ypos:Number){
+			this.x += xpos;
+			this.y += ypos;
+		}
 
-			// Change pixel positioning depending on current tile and deltas
-			var mapTileToPixel:Point = map.tileToPixel(_position.x, _position.y);
-			this.x = mapTileToPixel.x + _deltaChange.x - _actorOffset.x;
-			this.y = mapTileToPixel.y + _deltaChange.y - _actorOffset.y;
+		private function setCoordinates(_xpos:Number,_ypos:Number){
+			var _align:Point = map.tileToPixel(_xpos, _ypos);
+			this.x = _align.x - _actorOffset.x + map._mapOffset.x;
+			this.y = _align.y - _actorOffset.y + map._mapOffset.y;
+		}
+
+		private function getCoordinates(){
+			return new Point(this.x + _actorOffset.x + map._mapOffset.x,
+							 this.y + _actorOffset.y - map._mapOffset.y);
 		}
 
 

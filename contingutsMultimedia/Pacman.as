@@ -27,6 +27,8 @@ package contingutsMultimedia {
 
 		// Constructor
 		public function Pacman(pacmanGraphicsClip:String, m:Mapa, startPosition:Point){
+
+			_name = "Pacman";
 			map = m;
 			var definedImplementation:Class = getDefinitionByName(pacmanGraphicsClip) as Class;
       		pacmanClip = new definedImplementation();
@@ -34,7 +36,7 @@ package contingutsMultimedia {
       		var scale:Number =  map.getTileSize() * 1.3 / pacmanClip.width;
       		pacmanClip.scaleX = pacmanClip.scaleY = scale;
 
-      		var startDirection:Point = Constants.RIGHT;
+      		var startDirection:Point = Constants.LEFT;
       		pushedDirection = startDirection;
 			super(pacmanClip, Constants.PACMAN_SPEED, startDirection, startPosition);
 			pacmanMoveHead(startDirection);

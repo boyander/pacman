@@ -31,6 +31,8 @@ package contingutsMultimedia {
 		public var pacman:Pacman;
 		public var ghosts:Array;
 		public var names:Array = [Constants.BLINKY, Constants.INKY, Constants.PINKY, Constants.CLYDE];
+		//public var names:Array = [Constants.BLINKY];
+		//public var names:Array = new Array();
 		public var paused:Boolean;
 		public var _muted:Boolean;
 
@@ -101,6 +103,7 @@ package contingutsMultimedia {
 			
 			// Pacman start position
 			startPositionPacman = new Point(13,23);
+			//startPositionPacman = new Point(0,14);
 
 			// Setup new pacman character
 			if(pacman){
@@ -133,13 +136,14 @@ package contingutsMultimedia {
 		// Updates all objects of game
 		public function frameUpdate(e:Event){
 			if(!paused){
+				// Update pacman
+				pacman.actuate();
+
 				// Update ghosts
 				for(i=0; i < ghosts.length; i++){
 					ghosts[i].actuate();
 				}
-				// Update pacman
-				pacman.actuate();
-				
+
 				// Check ghosts collisions with pacman
 				var i:uint;
 				for(i=0; i < ghosts.length; i++){
@@ -212,6 +216,7 @@ package contingutsMultimedia {
 			// Play gameover animation
 			gameOverGraphic = new gameOverClip();
 			this.addChild(gameOverGraphic);
+
 			// Place in topcenter
 			gameOverGraphic.x = (stage.stageWidth/2) - (gameOverGraphic.width/2);
 			gameOverGraphic.y = -gameOverGraphic.height;

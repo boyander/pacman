@@ -14,6 +14,8 @@ package contingutsMultimedia {
 	import flash.text.TextFormat;
 	import flash.events.Event;
 	import flash.events.MouseEvent;
+	import flash.filters.GlowFilter;
+	import flash.filters.BitmapFilterQuality;
 	import com.gskinner.motion.GTween;
 	import com.gskinner.motion.easing.*;
 
@@ -54,6 +56,17 @@ package contingutsMultimedia {
 			myformat.font = new ScoreFont().fontName;
 			scoreText.defaultTextFormat = myformat;
 			levelText.defaultTextFormat = myformat;
+
+			// Glow filter
+			var glow:GlowFilter = new GlowFilter();
+			glow.color = 0xffff00;
+			glow.alpha = 1;
+			glow.blurX = 20;
+			glow.blurY = 20;
+			glow.strength = 2;
+			glow.quality = BitmapFilterQuality.MEDIUM;
+			levelText.filters=[glow];
+			scoreText.filters=[glow];
 
 			// Speaker button
 			speakerButton = new muteClip();

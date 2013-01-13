@@ -21,7 +21,7 @@ package contingutsMultimedia {
 	public class Mapa extends Sprite{
 
 		// Offset for all map tiles
-		private var _mapOffset:Point;
+		public var _mapOffset:Point;
 
 		// Tile Size
 		private var _tileSize:Number = 20;
@@ -126,8 +126,8 @@ package contingutsMultimedia {
 
 
 		public function tileToPixel(x:Number, y:Number){
-			var xpos = (_mapOffset.x + x * _tileSize) + _tileSize/2;
-			var ypos = (_mapOffset.y + y * _tileSize) + _tileSize/2;
+			var xpos = ((x+1) * _tileSize) - (_tileSize/2);
+			var ypos = ((y+1) * _tileSize) - (_tileSize/2);
 			return new Point(xpos,ypos);
 		}
 		public function getTileAtPoint(x:Number, y:Number){
@@ -186,7 +186,7 @@ package contingutsMultimedia {
 					}
 				}
 			}
-			animate();
+			zig = new ZigZagMatrix(mapArray);
 		}
 
 		public function getRandomPoint(){
@@ -207,26 +207,26 @@ package contingutsMultimedia {
 		}
 
 		public function eatItemAt(p:Point){
-			if(gameArray[p.y][p.x].getType() != Constants.NEUTRAL){
-				switch(gameArray[p.y][p.x].getType()){
-					case Constants.PAC:
-						dispatchEvent(new Event("eatPac"));
-					break;
-					case Constants.POWERUP:
-						dispatchEvent(new Event("eatPowerUp"));
-					break;
-				}
-				graphicsMap.removeChild(gameArray[p.y][p.x]);
-				gameArray[p.y][p.x] = new Item(Constants.NEUTRAL);
-				eatedItems--;
-				if(eatedItems <= 0){
-					dispatchEvent(new Event("pacmanWins"));
+			var s:Point = getMapSize();
+			if((p.x >= 0 && p.x < s.x) && (p.y >= 0 && p.y < s.y)){
+				if(gameArray[p.y][p.x].getType() != Constants.NEUTRAL){
+					switch(gameArray[p.y][p.x].getType()){
+						case Constants.PAC:
+							dispatchEvent(new Event("eatPac"));
+						break;
+						case Constants.POWERUP:
+							dispatchEvent(new Event("eatPowerUp"));
+						break;
+					}
+					graphicsMap.removeChild(gameArray[p.y][p.x]);
+					gameArray[p.y][p.x] = new Item(Constants.NEUTRAL);
+					eatedItems--;
+
+					if(eatedItems <= 0){
+						dispatchEvent(new Event("pacmanWins"));
+					}
 				}
 			}
-		}
-
-		public function animate(){
-			zig = new ZigZagMatrix(mapArray);
 		}
 
 		public function animateSlices():void{
