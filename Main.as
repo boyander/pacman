@@ -7,7 +7,7 @@ package {
 
 	public class Main extends MovieClip {
 	
-		private var mapFile:String = "levels/level1.txt";
+		private var mapFile:String = "levels/faable.txt";
 		private var game:Game;
 
 		public function Main() {

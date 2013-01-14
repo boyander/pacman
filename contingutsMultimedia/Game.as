@@ -113,7 +113,7 @@ package contingutsMultimedia {
 			// Animate level text and reset game
 			scoreboard.showMeTheLevel(function(){
 				// Setup new pacman character
-				startPositionPacman = new Point(13,23); // Pacman start position
+				startPositionPacman = new Point(20,8); // Pacman start position
 
 				pacman = new Pacman("PacmanClip", _mapa, startPositionPacman);
 				addChild(pacman);
