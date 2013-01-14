@@ -168,7 +168,7 @@ package contingutsMultimedia {
 			this.y = _align.y - _actorOffset.y + map._mapOffset.y;
 		}
 
-		private function getCoordinates(){
+		public function getCoordinates(){
 			return new Point(this.x + _actorOffset.x + map._mapOffset.x,
 							 this.y + _actorOffset.y - map._mapOffset.y);
 		}
