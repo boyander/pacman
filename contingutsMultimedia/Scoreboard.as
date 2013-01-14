@@ -17,6 +17,9 @@ package contingutsMultimedia {
 	import flash.filters.GlowFilter;
 	import flash.filters.BitmapFilterQuality;
 	import com.gskinner.motion.GTween;
+	import com.gskinner.motion.plugins.GlowPlugin;
+
+
 	import com.gskinner.motion.easing.*;
 
 	public class Scoreboard extends MovieClip{
@@ -31,6 +34,9 @@ package contingutsMultimedia {
 		public var levelText:TextField;
 		public var livesArray:Array;
 		public var speakerButton:MovieClip;
+
+		//Filter
+		var glow:GlowFilter;
 
 
 		public function Scoreboard(){
@@ -58,15 +64,16 @@ package contingutsMultimedia {
 			levelText.defaultTextFormat = myformat;
 
 			// Glow filter
-			var glow:GlowFilter = new GlowFilter();
+			// Initialize glow plugin
+			GlowPlugin.install();
+			glow = new GlowFilter();
 			glow.color = 0xffff00;
 			glow.alpha = 1;
 			glow.blurX = 20;
 			glow.blurY = 20;
-			glow.strength = 2;
+			glow.strength = 0;
 			glow.quality = BitmapFilterQuality.MEDIUM;
 			levelText.filters=[glow];
-			scoreText.filters=[glow];
 
 			// Speaker button
 			speakerButton = new muteClip();
@@ -117,9 +124,16 @@ package contingutsMultimedia {
 			scoreText.text = "Score: " + String(score);
 		}
 
+		public function processFilter(e:Event):void{
+				scoreText.filters=[glow];
+		}
+
 		public function addLevel(){
 			level += 1;
 			levelText.text = "Level: " + String(level);
+
+			var gTween:GTween = new GTween(levelText,0.6,{strength:5},{nextTween:gTween2,ease:Sine.easeIn});
+			var gTween2:GTween = new GTween(levelText,0.6,{strength:0},{ease:Sine.easeOut});
 		}
 
 		public function showMeTheScore(p:Point){

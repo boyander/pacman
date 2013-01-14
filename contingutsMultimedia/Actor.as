@@ -19,7 +19,7 @@ package contingutsMultimedia {
 		public var _deltaChange:Point;
 		public var _position:Point;
 		public var map:Mapa;
-		private var _mapSize:Point;
+		public var _mapSize:Point;
 		public var _graphicsImplement:MovieClip;
 		public var _startPosition:Point;
 		public var _name:String;
@@ -111,7 +111,7 @@ package contingutsMultimedia {
 				if(nextTilePixel.x - current.x < map.getTileSize()){
 						collisionX = true;
 				}
-			}else{
+			}else if(_moveDirection.x < 0){
 				if(current.x - nextTilePixel.x < map.getTileSize()){
 						collisionX = true;
 				}
@@ -121,14 +121,14 @@ package contingutsMultimedia {
 				if(nextTilePixel.y - current.y < map.getTileSize()){
 						collisionY = true;
 				}
-			}else{
+			}else if (_moveDirection.y < 0){
 				if(current.y - nextTilePixel.y < map.getTileSize()){
 						collisionY = true;
 				}
 			}
 
 			// Check overflow and update positioning in X axis
-			if(this.canMoveThru(p) && collisionX && _moveDirection.x != 0){
+			if(this.canMoveThru(p) && collisionX){
 				// Overflowed x direction only, makes pacman passthru corridor
 				if(  _position.x < 0 ){
 					_position.x = _mapSize.x;
@@ -143,15 +143,17 @@ package contingutsMultimedia {
 			}
 
 			// Check overflow and update positioning in Y axis
-			if(this.canMoveThru(p) && collisionY && _moveDirection.y != 0){
+			if(this.canMoveThru(p) && collisionY){
 				_position.y += _moveDirection.y;
 				this.overflowTile();
 			}
 			
 			if( _name != "Pacman"){
 				this.addCoordinates((_speed * _moveDirection.x), (_speed * _moveDirection.y));
-			}else if( (!collisionY || ! collisionX)  || this.canMoveThru(p)){
+			}else if( (!collisionY || !collisionX)  && this.canMoveThru(p)){
 				this.addCoordinates((_speed * _moveDirection.x), (_speed * _moveDirection.y));
+			}else{
+				this.setCoordinates(_position.x,_position.y);
 			}
 		}
 

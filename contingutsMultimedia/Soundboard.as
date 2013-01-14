@@ -14,7 +14,7 @@ package contingutsMultimedia {
 
 	class Soundboard{
 
-		// SoundFX dictionarynew Dictionary();
+		// SoundFX dictionary of sound arrays;
 		private var soundFX:Dictionary;
 		// Sound channel
 		var channel:SoundChannel;
@@ -28,14 +28,21 @@ package contingutsMultimedia {
 			volumeAdjust = new SoundTransform();
 		}
 
-		public function addSound(e:String,file:String){
-			var s:Sound = new Sound();
-			s.load(new URLRequest(file));
-			soundFX[e] = s;
+		public function addSound(e:String,files:Array){
+			soundFX[e] = new Array();
+			for(var i:uint; i < files.length; i++){
+				var file = files[i];
+				var s:Sound = new Sound();
+				s.load(new URLRequest(file));
+				soundFX[e].push(s);
+			}
 		}
 
 		public function playSound(e:String){
-			channel = soundFX[e].play();
+			// Get a random audio file and assign to channel
+			var rnd = Math.floor(Math.random()*(soundFX[e].length));
+			channel = soundFX[e][rnd].play();
+
 			// After start playing scale to current volume and mute if necessary
 			channel.soundTransform = volumeAdjust;
 		}
@@ -53,11 +60,16 @@ package contingutsMultimedia {
 		}
 
 		public function loadSounds(){
-			this.addSound(Constants.EVENT_EATPOWERUP,"audios/chili.mp3");
-			this.addSound(Constants.EVENT_GAMEOVER,"audios/nucelar.mp3");
-			this.addSound(Constants.EVENT_EATPAC,"audios/eat_pac.mp3");
-			this.addSound(Constants.EVENT_PACMANDIES,"audios/pacman_dies.mp3");
-			this.addSound(Constants.EVENT_EATGHOST,"audios/eat_pac2.mp3");
+			this.addSound(Constants.EVENT_EATPOWERUP,["audios/chili.mp3"]);
+			this.addSound(Constants.EVENT_GAMEOVER,["audios/nucelar.mp3",
+													"audios/poli_prostituta.mp3",
+													"audios/trabajo_por_dinero.mp3",
+													"audios/pilas.mp3",
+													"audios/homer_malo.mp3"
+													]);
+			this.addSound(Constants.EVENT_EATPAC,["audios/eat_pac.mp3"]);
+			this.addSound(Constants.EVENT_PACMANDIES,["audios/pacman_dies.mp3"]);
+			this.addSound(Constants.EVENT_EATGHOST,["audios/eat_pac2.mp3"]);
 			//this.addSound('BGS',"audios/bg_theme.mp3");
 		}
 

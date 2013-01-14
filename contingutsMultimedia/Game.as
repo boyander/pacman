@@ -33,8 +33,8 @@ package contingutsMultimedia {
 		private var _offset:Point;
 		public var pacman:Pacman;
 		public var ghosts:Array;
-		public var names:Array = [Constants.BLINKY, Constants.INKY, Constants.PINKY, Constants.CLYDE];
-		//public var names:Array = [Constants.BLINKY];
+		//public var names:Array = [Constants.BLINKY, Constants.INKY, Constants.PINKY, Constants.CLYDE];
+		public var names:Array = [Constants.BLINKY];
 		//public var names:Array = new Array();
 		public var paused:Boolean;
 		public var _muted:Boolean;
