@@ -61,15 +61,22 @@ package contingutsMultimedia {
 
 		public function loadSounds(){
 			this.addSound(Constants.EVENT_EATPOWERUP,["audios/chili.mp3"]);
-			this.addSound(Constants.EVENT_GAMEOVER,["audios/nucelar.mp3",
-													"audios/poli_prostituta.mp3",
-													"audios/trabajo_por_dinero.mp3",
-													"audios/pilas.mp3",
-													"audios/homer_malo.mp3"
-													]);
 			this.addSound(Constants.EVENT_EATPAC,["audios/eat_pac.mp3"]);
 			this.addSound(Constants.EVENT_PACMANDIES,["audios/pacman_dies.mp3"]);
 			this.addSound(Constants.EVENT_EATGHOST,["audios/eat_pac2.mp3"]);
+			this.addSound(Constants.EVENT_GAMEOVER,[
+										"audios/nucelar.mp3",
+										"audios/poli_prostituta.mp3",
+										"audios/trabajo_por_dinero.mp3",
+										"audios/pilas.mp3",
+										"audios/homer_malo.mp3",
+										"audios/bocadillo.mp3",
+										"audios/corre_platano.mp3",
+										"audios/homer_feliz.mp3",
+										"audios/tu_patata.mp3",
+										"audios/tipo_de_incognito.mp3",
+										"audios/vamonos_atomos.mp3",
+										]);
 			//this.addSound('BGS',"audios/bg_theme.mp3");
 		}
 

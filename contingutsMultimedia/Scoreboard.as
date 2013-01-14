@@ -34,6 +34,7 @@ package contingutsMultimedia {
 		public var levelText:TextField;
 		public var livesArray:Array;
 		public var speakerButton:MovieClip;
+		public var myformat:TextFormat;
 
 		//Filter
 		var glow:GlowFilter;
@@ -56,7 +57,7 @@ package contingutsMultimedia {
 			levelText.autoSize = TextFieldAutoSize.LEFT;
 
 			// Score & Level text format
-			var myformat:TextFormat = new TextFormat();
+			myformat = new TextFormat();
 			myformat.color = 0xFFFFFF;
 			myformat.size = 30;
 			myformat.font = new ScoreFont().fontName;
@@ -67,7 +68,7 @@ package contingutsMultimedia {
 			// Initialize glow plugin
 			GlowPlugin.install();
 			glow = new GlowFilter();
-			glow.color = 0xffff00;
+			glow.color = 0xff0000;
 			glow.alpha = 1;
 			glow.blurX = 20;
 			glow.blurY = 20;
@@ -132,8 +133,8 @@ package contingutsMultimedia {
 			level += 1;
 			levelText.text = "Level: " + String(level);
 
-			var gTween:GTween = new GTween(levelText,0.6,{strength:5},{nextTween:gTween2,ease:Sine.easeIn});
-			var gTween2:GTween = new GTween(levelText,0.6,{strength:0},{ease:Sine.easeOut});
+			var gTween2:GTween = new GTween(levelText,1,{strength:0},{autoPlay:false,delay:1,ease:Sine.easeOut});
+			var gTween:GTween = new GTween(levelText,1,{strength:3},{nextTween:gTween2,ease:Sine.easeIn});
 		}
 
 		public function showMeTheScore(p:Point){
@@ -144,6 +145,20 @@ package contingutsMultimedia {
 			var tween2:GTween = new GTween(this.levelText,3,
 				{x:p.x - (this.levelText.width/2) ,y:(p.y + this.scoreText.height)},
 				{ease:Sine.easeIn}
+			);
+		}
+
+		public function showMeTheLevel(callback:Function){
+			var tween3:GTween = new GTween(this.levelText,1,
+				{x:200, y:0},
+				{autoPlay:false,delay:1,ease:Sine.easeOut,onComplete:callback}
+			);
+
+			var tween2:GTween = new GTween(this.levelText,1,
+				{x:(stage.stageWidth/2) - (this.levelText.width/2), 
+				 y:(stage.stageHeight/2) - (this.levelText.height/2)
+				 },
+				{nextTween:tween3,ease:Sine.easeIn}
 			);
 		}
 

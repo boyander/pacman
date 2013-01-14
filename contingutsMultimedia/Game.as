@@ -33,8 +33,8 @@ package contingutsMultimedia {
 		private var _offset:Point;
 		public var pacman:Pacman;
 		public var ghosts:Array;
-		//public var names:Array = [Constants.BLINKY, Constants.INKY, Constants.PINKY, Constants.CLYDE];
-		public var names:Array = [Constants.BLINKY];
+		public var names:Array = [Constants.BLINKY, Constants.INKY, Constants.PINKY, Constants.CLYDE];
+		//public var names:Array = [Constants.BLINKY];
 		//public var names:Array = new Array();
 		public var paused:Boolean;
 		public var _muted:Boolean;
@@ -99,38 +99,41 @@ package contingutsMultimedia {
 		public function resetGame(){
 
 			trace("---- Reseting characters ----");
-
-			// Unpause game
-			paused = false;
-
 			
-			// Pacman start position
-			startPositionPacman = new Point(13,23);
-			//startPositionPacman = new Point(0,14);
+			// Remove frame listener
+			removeEventListener(Event.ENTER_FRAME, frameUpdate);
 
-			// Setup new pacman character
+			// Remove current ghosts & pacman
 			if(pacman){
-				this.removeChild(pacman);
+				removeChild(pacman);
 				pacman = null;
 			}
-			pacman = new Pacman("PacmanClip", _mapa, startPositionPacman);
-			this.addChild(pacman);
-
-			// Remove current ghosts & listeners
 			removeGhosts();
 
-			// Create ghosts
-			var ghost:Ghost;	
-			for(var i:uint; i < names.length; i++){
-				ghost = new Ghost(names[i], Constants.graficImplementation(names[i]), pacman, _mapa, pchecker);
-				ghost.addEventListener("eatGhost", eventProcessor);
-				ghost.addEventListener("killPacman", eventProcessor);
-				ghosts.push(ghost);
-				this.addChild(ghost);
-			}
+			// Animate level text and reset game
+			scoreboard.showMeTheLevel(function(){
+				// Setup new pacman character
+				startPositionPacman = new Point(13,23); // Pacman start position
 
-			// Update characters and objects
-			this.addEventListener(Event.ENTER_FRAME, frameUpdate);
+				pacman = new Pacman("PacmanClip", _mapa, startPositionPacman);
+				addChild(pacman);
+
+				// Create ghosts
+				var ghost:Ghost;	
+				for(var i:uint; i < names.length; i++){
+					ghost = new Ghost(names[i], Constants.graficImplementation(names[i]), pacman, _mapa, pchecker);
+					ghost.addEventListener("eatGhost", eventProcessor);
+					ghost.addEventListener("killPacman", eventProcessor);
+					ghosts.push(ghost);
+					addChild(ghost);
+				}
+
+				// Unpause game
+				paused = false;
+
+				// Update characters and objects
+				addEventListener(Event.ENTER_FRAME, frameUpdate);
+			});
 		}
 
 
