@@ -36,7 +36,7 @@ package contingutsMultimedia {
       		var scale:Number =  map.getTileSize() * 1.3 / pacmanClip.width;
       		pacmanClip.scaleX = pacmanClip.scaleY = scale;
 
-      		var startDirection:Point = Constants.LEFT;
+      		var startDirection:Point = Constants.RIGHT;
       		pushedDirection = startDirection;
 			super(pacmanClip, Constants.PACMAN_SPEED, startDirection, startPosition);
 			pacmanMoveHead(startDirection);

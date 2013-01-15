@@ -1,19 +1,19 @@
-/**********/
-/* PACMAN */
-/**********/
+PACMAN
+======
 
+You can play it at http://faable.com:8080
+
+Feel free to contribute with code improvement :-)
 
 DESCRIPTION
 ===========
 Implementation of pacman-like game in ActionScript 3 for Universitat Politécnica de Catalunya 
-in subject of Continguts Multimedia (December 2012). 
-
+in subject of Continguts Multimedia (November 2012 - January 2013). 
 
 AUTHORS
 =======
  - Marc Pomar Torres [boyander@gmail.com]
  - Laura Cotrina Barrios [lauracotri90@gmail.com] 
-
 
 REFERENCES
 ==========

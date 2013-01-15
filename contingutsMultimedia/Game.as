@@ -113,7 +113,7 @@ package contingutsMultimedia {
 			// Animate level text and reset game
 			scoreboard.showMeTheLevel(function(){
 				// Setup new pacman character
-				startPositionPacman = new Point(20,8); // Pacman start position
+				startPositionPacman = new Point(13,23); // Pacman start position
 
 				pacman = new Pacman("PacmanClip", _mapa, startPositionPacman);
 				addChild(pacman);
@@ -289,19 +289,21 @@ package contingutsMultimedia {
 
 		// Detects key press
 		public function detectKey(event:KeyboardEvent):void{
-			switch (event.keyCode){
-				case Keyboard.DOWN :
-					pacman.updateMovement(Constants.DOWN);
-					break;
-				case Keyboard.UP :
-					pacman.updateMovement(Constants.UP);
-					break;
-				case Keyboard.LEFT :
-					pacman.updateMovement(Constants.LEFT);
-					break;
-				case Keyboard.RIGHT :
-					pacman.updateMovement(Constants.RIGHT);
-					break;
+			if(pacman != null){
+				switch (event.keyCode){
+					case Keyboard.DOWN :
+						pacman.updateMovement(Constants.DOWN);
+						break;
+					case Keyboard.UP :
+						pacman.updateMovement(Constants.UP);
+						break;
+					case Keyboard.LEFT :
+						pacman.updateMovement(Constants.LEFT);
+						break;
+					case Keyboard.RIGHT :
+						pacman.updateMovement(Constants.RIGHT);
+						break;
+				}
 			}
 		}
 	}
