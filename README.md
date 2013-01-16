@@ -3,7 +3,7 @@ PACMAN
 
 ## [PLAY IT NOW!](http://faable.com/pacman/)
 
-<img src="https://raw.github.com/boyander/pacman-as3/master/graphics/level1.png"/>
+<img src="https://raw.github.com/boyander/pacman/master/graphics/level1.png"/>
 
 Feel free to contribute with code improvement, new maps, etc. :-)
 
