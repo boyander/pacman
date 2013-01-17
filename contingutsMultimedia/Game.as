@@ -93,6 +93,7 @@ package contingutsMultimedia {
 			// Soundboard
 			soundboard = new Soundboard();
 			soundboard.loadSounds();
+			soundboard.playSound("BGS",true);
 
 		}
 
@@ -220,6 +221,7 @@ package contingutsMultimedia {
 			trace("GAME OVER");
 
 			// Game over sound
+			soundboard.stopAll();
 			soundboard.playSound(Constants.EVENT_GAMEOVER);
 
 			// Invisible pacman
@@ -262,6 +264,7 @@ package contingutsMultimedia {
 
 		public function restartGame(e:Event){
 			trace("RESTARTING GAME...");
+			soundboard.playSound("BGS",true);
 
 			// Remove filters;
 			_mapa.filters = new Array();

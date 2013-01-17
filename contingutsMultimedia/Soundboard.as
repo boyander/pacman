@@ -8,9 +8,11 @@ Description:
 package contingutsMultimedia {	
 	import flash.utils.Dictionary;
 	import flash.media.Sound;
+	import flash.events.Event;
 	import flash.media.SoundChannel;
 	import flash.media.SoundTransform;
 	import flash.net.URLRequest;
+	import flash.media.SoundMixer;
 
 	class Soundboard{
 
@@ -38,11 +40,15 @@ package contingutsMultimedia {
 			}
 		}
 
-		public function playSound(e:String){
+		public function playSound(e:String,loop:Boolean=false){
 			// Get a random audio file and assign to channel
 			var rnd = Math.floor(Math.random()*(soundFX[e].length));
 			channel = soundFX[e][rnd].play();
-
+			if(loop){
+				channel.addEventListener(Event.SOUND_COMPLETE, function(){
+					playSound(e,loop);
+				});
+			}
 			// After start playing scale to current volume and mute if necessary
 			channel.soundTransform = volumeAdjust;
 		}
@@ -57,6 +63,10 @@ package contingutsMultimedia {
 			}
 			// Set volume adjust in case play were started early
 			channel.soundTransform = volumeAdjust;
+		}
+
+		public function stopAll(){
+			SoundMixer.stopAll();
 		}
 
 		public function loadSounds(){
@@ -77,7 +87,7 @@ package contingutsMultimedia {
 										"audios/tipo_de_incognito.mp3",
 										"audios/vamonos_atomos.mp3",
 										]);
-			//this.addSound('BGS',"audios/bg_theme.mp3");
+			this.addSound('BGS',["audios/pacman_bgsound_marc.mp3"]);
 		}
 
 	}
