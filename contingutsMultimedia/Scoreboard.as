@@ -63,7 +63,7 @@ package contingutsMultimedia {
 			myformat = new TextFormat();
 			myformat.color = 0xFFFFFF;
 			myformat.size = 30;
-			myformat.font = new ScoreFont().fontName;
+			myformat.font = "Visitor TT2 BRK";
 			scoreText.defaultTextFormat = myformat;
 			levelText.defaultTextFormat = myformat;
 
