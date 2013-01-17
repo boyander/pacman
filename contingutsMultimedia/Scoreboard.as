@@ -52,18 +52,22 @@ package contingutsMultimedia {
 			scoreText = new TextField();
 			scoreText.mouseEnabled = false;
 			scoreText.autoSize = TextFieldAutoSize.LEFT;
+			scoreText.embedFonts = true;
+
 
 			// Setup level
 			level = 1;
 			levelText = new TextField();
 			levelText.mouseEnabled = false;
 			levelText.autoSize = TextFieldAutoSize.LEFT;
+			levelText.embedFonts = true;
 
 			// Score & Level text format
 			myformat = new TextFormat();
 			myformat.color = 0xFFFFFF;
 			myformat.size = 30;
-			myformat.font = "Visitor TT2 BRK";
+			myformat.font = new ScoreFont().fontName;
+
 			scoreText.defaultTextFormat = myformat;
 			levelText.defaultTextFormat = myformat;
 
