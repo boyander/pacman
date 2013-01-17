@@ -18,7 +18,7 @@ package contingutsMultimedia {
 	import flash.filters.BitmapFilterQuality;
 	import com.gskinner.motion.GTween;
 	import com.gskinner.motion.plugins.GlowPlugin;
-
+	import flash.text.Font;
 
 	import com.gskinner.motion.easing.*;
 
@@ -41,6 +41,9 @@ package contingutsMultimedia {
 
 
 		public function Scoreboard(){
+			// Register font
+			Font.registerFont(ScoreFont);
+
 			// Setup lives
 			lives = Constants.GAMESTARTLIVES;
 
