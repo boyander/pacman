@@ -7,6 +7,8 @@ Description:
 
 package contingutsMultimedia {	
 	import flash.display.MovieClip;
+	import flash.display.Sprite;
+
 	import flash.geom.Point;
 	import contingutsMultimedia.Pacman;
 	import contingutsMultimedia.Ghost;
@@ -27,20 +29,20 @@ package contingutsMultimedia {
 	import com.gskinner.motion.easing.*;
 	import com.gskinner.motion.plugins.BlurPlugin;
 
-	public class Game extends MovieClip{
+	public class Game extends Sprite{
 
 		private var _mapa:Mapa;
 		private var _offset:Point;
 		public var pacman:Pacman;
 		public var ghosts:Array;
 		public var names:Array = [Constants.BLINKY, Constants.INKY, Constants.PINKY, Constants.CLYDE];
-		//public var names:Array = [Constants.BLINKY];
+		//public var names:Array = [Constants.CLYDE];
 		//public var names:Array = new Array();
 		public var paused:Boolean;
 		public var _muted:Boolean;
 
 		// DEBUG: Path checker 
-		private var pchecker:MovieClip = new MovieClip();
+		private var pcheckArray:Array = new Array();
 
 		// Start position pacman
 		var startPositionPacman:Point;
@@ -61,23 +63,21 @@ package contingutsMultimedia {
 			// Initialize blur plugin
 			BlurPlugin.install();
 
-			// DEBUG: Path checker
-			this.addChild(pchecker);
-
 			// Initialize ghosts
 			ghosts = new Array();
 
 			// Start map instance with map offset
 			_offset = new Point(0,25);
+
 			_mapa = new Mapa(gameMap, _offset);
-			_mapa.addEventListener("eatPac", eventProcessor);
-			_mapa.addEventListener("eatPowerUp", eventProcessor);
-			_mapa.addEventListener("pacmanWins", eventProcessor);
-			_mapa.addEventListener("mapaLoaded", function(e:Event){
+			_mapa.dispatcher.addEventListener("eatPac", eventProcessor);
+			_mapa.dispatcher.addEventListener("eatPowerUp", eventProcessor);
+			_mapa.dispatcher.addEventListener("pacmanWins", eventProcessor);
+			_mapa.dispatcher.addEventListener("mapaLoaded", function(e:Event){
 				// When map loaded reset game and spawn characters
 				resetGame();
 			});
-			this.addChild(_mapa); // Add map clip and start listeners
+			this.addChild(_mapa.getGraphicsImplement()); // Add map clip and start listeners
 
 			// Setup scoreboard (counts lives and scores)
 			scoreboard = new Scoreboard();
@@ -97,7 +97,7 @@ package contingutsMultimedia {
 
 		}
 
-		public function resetGame(){
+		public function resetGame(gameOver:Boolean = false){
 
 			trace("---- Reseting characters ----");
 			
@@ -105,28 +105,36 @@ package contingutsMultimedia {
 			removeEventListener(Event.ENTER_FRAME, frameUpdate);
 
 			// Remove current ghosts & pacman
-			if(pacman){
-				removeChild(pacman);
+			if(pacman != null){
+				_mapa.getGraphicsImplement().removeChild(pacman);
 				pacman = null;
 			}
 			removeGhosts();
-
+			
+			if(gameOver){
+				scoreboard.reset();
+				_mapa.resetMap();
+			}
 			// Animate level text and reset game
 			scoreboard.showMeTheLevel(function(){
 				// Setup new pacman character
 				startPositionPacman = new Point(13,23); // Pacman start position
+				//startPositionPacman = new Point(1,1); // Pacman start position
 
 				pacman = new Pacman("PacmanClip", _mapa, startPositionPacman);
-				addChild(pacman);
+				_mapa.getGraphicsImplement().addChild(pacman);
 
 				// Create ghosts
 				var ghost:Ghost;	
 				for(var i:uint; i < names.length; i++){
+					var pchecker:Sprite = new Sprite();
+					pcheckArray.push(pchecker);
 					ghost = new Ghost(names[i], Constants.graficImplementation(names[i]), pacman, _mapa, pchecker);
 					ghost.addEventListener("eatGhost", eventProcessor);
 					ghost.addEventListener("killPacman", eventProcessor);
 					ghosts.push(ghost);
-					addChild(ghost);
+					_mapa.getGraphicsImplement().addChild(ghost);
+					_mapa.getGraphicsImplement().addChild(pchecker);
 				}
 
 				// Unpause game
@@ -213,7 +221,7 @@ package contingutsMultimedia {
 				ghost.resetGhost(); // Make sure garbage collector removes timers
 				ghost.removeEventListener("eatGhost", eventProcessor);
 				ghost.removeEventListener("killPacman", eventProcessor);
-				this.removeChild(ghost);
+				_mapa.getGraphicsImplement().removeChild(ghost);
 			}
 		}
 
@@ -252,8 +260,8 @@ package contingutsMultimedia {
 
 			// Blur tween for _mapa
 			var blur:BlurFilter = new BlurFilter(0, 0, 2);
-			_mapa.filters = new Array(blur);
-			var tween2:GTween = new GTween(_mapa,1,{blur:25},{ease:Sine.easeIn});
+			_mapa.getGraphicsImplement().filters = new Array(blur);
+			var tween2:GTween = new GTween(_mapa.getGraphicsImplement(),1,{blur:25},{ease:Sine.easeIn});
 
 			// Tween for score
 			scoreboard.showMeTheScore(new Point(
@@ -267,15 +275,13 @@ package contingutsMultimedia {
 			soundboard.playSound("BGS",true);
 
 			// Remove filters;
-			_mapa.filters = new Array();
+			_mapa.getGraphicsImplement().filters = new Array();
 
 			// Remove gameover
 			removeChild(gameOverGraphic);
 			removeChild(replayButton);
 
-			resetGame();
-			scoreboard.reset();
-			_mapa.resetMap();
+			resetGame(true);
 		}
 
 		public function toggleMute(e:Event){

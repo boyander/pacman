@@ -28,6 +28,7 @@ package contingutsMultimedia {
 			soundFX = new Dictionary();
 			channel = new SoundChannel();
 			volumeAdjust = new SoundTransform();
+			volumeAdjust.volume = 0.0;
 		}
 
 		public function addSound(e:String,files:Array){

@@ -46,5 +46,9 @@ package contingutsMultimedia {
 		public function getType(){
 			return _type;
 		}
+
+		public function getGraphics(){
+			return _type;
+		}
 	}
 }

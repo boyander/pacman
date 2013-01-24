@@ -35,13 +35,13 @@ package contingutsMultimedia{
 		public static const CLYDE:String = "Clyde";
 
 		// Ghost Status
-		public static const NORMAL:String = "Normal";
-		public static const FIGHT:String = "Fight";
-		public static const GHOST_FEAR:String = "Fear";
-		public static const GO_INSIDE_JAIL:String = "Killed";
+		public static const NORMAL:String = "GH-Normal";
+		public static const FIGHT:String = "GH-Fight";
+		public static const GHOST_FEAR:String = "GH-Fear";
+		public static const GO_INSIDE_JAIL:String = "GH-Killed";
 
 		// Ghost times on status
-		public static const FEAR_TIME:Number = 5000;
+		public static const FEAR_TIME:Number = 7000;
 		public static const JAIL_TIME:Number = 5000;
 
 		// Ghost graphics (MovieClip name's)
@@ -76,6 +76,22 @@ package contingutsMultimedia{
 					return GRAFIC_CLYDE;
 				default:
 					return GRAFIC_INKY;
+			}
+		}
+
+		// Constant to function to return ghost color
+		public static function ghostColor(fantasma:String){
+			switch (fantasma){
+				case BLINKY:
+					return "0xFF4E50";
+				case INKY:
+					return "0x69D2E7";
+				case PINKY:
+					return "0xF7477D";
+				case CLYDE:
+					return "0xF9D423";
+				default:
+					return "0x336699";
 			}
 		}
 	

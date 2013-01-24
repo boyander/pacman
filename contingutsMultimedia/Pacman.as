@@ -28,18 +28,15 @@ package contingutsMultimedia {
 		// Constructor
 		public function Pacman(pacmanGraphicsClip:String, m:Mapa, startPosition:Point){
 
-			_name = "Pacman";
-			map = m;
 			var definedImplementation:Class = getDefinitionByName(pacmanGraphicsClip) as Class;
       		pacmanClip = new definedImplementation();
+
       		// Scaled pacman
-      		var scale:Number =  map.getTileSize() * 1.3 / pacmanClip.width;
+      		var scale:Number =  m.getTileSize() * 1.3 / pacmanClip.width;
       		pacmanClip.scaleX = pacmanClip.scaleY = scale;
 
-      		var startDirection:Point = Constants.RIGHT;
-      		pushedDirection = startDirection;
-			super(pacmanClip, Constants.PACMAN_SPEED, startDirection, startPosition);
-			pacmanMoveHead(startDirection);
+      		pushedDirection = Constants.RIGHT;
+			super(pacmanClip, m, Constants.PACMAN_SPEED, startPosition, "Pacman");
 		}
 
 		public function resetPacman(){
@@ -86,13 +83,11 @@ package contingutsMultimedia {
 		}
 		
 		override public function getNextMoveDirection(){
+			//this.setMoveDirection(pushedDirection);
 			if(pushedDirection != null){
-				var p:Point = new Point(_position.x + pushedDirection.x, _position.y + pushedDirection.y);
-				if(canMoveThru(p)){
-					if(this.setMoveDirection(pushedDirection)){
-						pacmanMoveHead(pushedDirection);
-						pushedDirection = null;	
-					}
+				if(this.setMoveDirection(pushedDirection)){
+					pacmanMoveHead(pushedDirection);
+					pushedDirection = null;	
 				}
 			}
 		}
