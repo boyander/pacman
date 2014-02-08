@@ -18,6 +18,7 @@ package contingutsMultimedia {
 	import contingutsMultimedia.ZigZagMatrix;
 	import flash.utils.Timer;
     import flash.events.TimerEvent;
+    import flash.debugger.enterDebugger;
 
 	public class Mapa{
 		// Tile Size
@@ -81,16 +82,17 @@ package contingutsMultimedia {
 		// Parse from txt file to array
 		public function parseaMapa(e:Event):void
 		{
-			var rawMap:String = URLLoader(e.target).data;
+			var windowsNewline:RegExp = /\r\n/g;
+			var rawMap:String = URLLoader(e.target).data.replace(windowsNewline,'\n');
 			var tile;
 			var row:Number = 0;
 			var column:Number = 0;
-
 			// Assign memory for mapArray
 			mapArray[0] = new Array();
 
 			for (var i:uint = 0; i < rawMap.length; i++)
 			{
+
 				tile = rawMap.charAt(i);
 				if (tile == 0){
 					row++;
