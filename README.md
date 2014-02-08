@@ -17,6 +17,10 @@ DEVELOPED BY
  - [Marc Pomar Torres](boyander@gmail.com)
  - [Laura Cotrina Barrios](lauracotri90@gmail.com)
 
+SPECIAL THANKS TO
+-----------------
+ - [Devendra Pulaveli](deven20377@gmail.com)
+
 REFERENCES
 ----------
  - [Pacman Dossier](http://home.comcast.net/~jpittman2/pacman/pacmandossier.html)
