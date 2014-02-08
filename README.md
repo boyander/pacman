@@ -12,13 +12,10 @@ DESCRIPTION
 Implementation of Pacman game in ActionScript 3 for Universitat Politécnica de Catalunya 
 in subject of Continguts Multimedia (November 2012 - January 2013). 
 
-MAIN CODERS
------------
- - [Marc Pomar Torres](boyander@gmail.com)
-
-CONTRIBUTORS
+DEVELOPED BY
 ------------
-- [Laura Cotrina Barrios](lauracotri90@gmail.com)
+ - [Marc Pomar Torres](boyander@gmail.com)
+ - [Laura Cotrina Barrios](lauracotri90@gmail.com)
 
 REFERENCES
 ----------
