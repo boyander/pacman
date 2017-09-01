@@ -1,7 +1,9 @@
 PACMAN
 ======
 
-## [PLAY IT NOW!](http://faable.com/pacman/)
+## [CLICK TO PLAY](http://boyander.github.io/pacman/)
+Or use this link: [http://boyander.github.io/pacman/](http://boyander.github.io/pacman/)
+*Note:* Flash player is required to play the game
 
 <img src="https://raw.github.com/boyander/pacman/master/graphics/level1.png"/>
 
@@ -9,8 +11,7 @@ Feel free to contribute with code improvement, new maps, etc. :-)
 
 DESCRIPTION
 -----------
-Implementation of Pacman game in ActionScript 3 for Universitat Politécnica de Catalunya 
-in subject of Continguts Multimedia (November 2012 - January 2013). 
+Implementation of Pacman game in ActionScript 3, the code dates from November 2012.
 
 DEVELOPED BY
 ------------
